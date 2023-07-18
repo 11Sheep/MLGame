@@ -445,6 +445,7 @@ MonoBehaviour:
     maxStep: 0
   hasUpgradedFromAgentParameters: 1
   MaxStep: 0
+  _behaviorParameters: {fileID: 4846370926712846946}
 --- !u!114 &4846370926712846946
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -664,13 +665,11 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   _stageScale: 1
-  _numOfCandies: 1
+  _numOfCandies: 3
   _stageT: {fileID: 7036766466601527721}
   _candiesContainer: {fileID: 4940322013845709970}
   _agentT: {fileID: 4846370926712846947}
   _isAgentLocationRandom: 0
-  winMaterial: {fileID: 2100000, guid: ec1ff073af9b87b4980fe6f3559bd5a6, type: 2}
-  loseMaterial: {fileID: 2100000, guid: 4046ad857c3a47b4b92b495f0a1fb010, type: 2}
   floorMeshRenderer: {fileID: 4846370926650093647}
   _agentScript: {fileID: 4846370926712846951}
   _moveSpeed: 4

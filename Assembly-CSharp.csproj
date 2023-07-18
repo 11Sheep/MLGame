@@ -50,6 +50,7 @@
      <Folder Include="Assets\Scripts" />
      <Folder Include="Assets\ML-Agents" />
      <None Include="Assets\ML-Agents\Timers\SampleScene_timers.json" />
+     <Folder Include="Assets\Resources" />
      <Folder Include="Assets\Materials" />
      <None Include="Assets\ML-Agents\Timers\MainScene_timers.json" />
      <Folder Include="Assets\Scenes" />
@@ -335,6 +336,9 @@
      </Reference>
      <Reference Include="Grpc.Core">
      <HintPath>C:\Users\Lior\Documents\UnityProjects\MLGame\Library\PackageCache\com.unity.ml-agents@2.0.1\Plugins\ProtoBuffer\Grpc.Core.dll</HintPath>
+     </Reference>
+     <Reference Include="DOTween">
+     <HintPath>C:\Users\Lior\Documents\UnityProjects\MLGame\Assets\Plugins\Demigiant\DOTween\DOTween.dll</HintPath>
      </Reference>
      <Reference Include="UnityEditor.iOS.Extensions.Xcode">
      <HintPath>C:\Program Files\2021.3.20f1\Editor\Data\PlaybackEngines\iOSSupport\UnityEditor.iOS.Extensions.Xcode.dll</HintPath>
@@ -824,6 +828,10 @@
      </Reference>
   </ItemGroup>
   <ItemGroup>
+    <ProjectReference Include="Assembly-CSharp-firstpass.csproj">
+      <Project>{426ab6ba-9c43-9183-3f77-6a8849b4accc}</Project>
+      <Name>Assembly-CSharp-firstpass</Name>
+    </ProjectReference>
   </ItemGroup>
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
   <!-- To modify your build process, add your task inside one of the targets below and uncomment it.

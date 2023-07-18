@@ -5,6 +5,7 @@ using JetBrains.Annotations;
 using UnityEngine;
 using Unity.MLAgents;
 using Unity.MLAgents.Actuators;
+using Unity.MLAgents.Policies;
 using Unity.MLAgents.Sensors;
 using Random = UnityEngine.Random;
 
@@ -55,6 +56,11 @@ public class AgentScript : Agent
     /// </summary>
     private RewardCandyScript[] _rewardCandies;
     
+    /// <summary>
+    /// 
+    /// </summary>
+    [SerializeField] private BehaviorParameters _behaviorParameters;
+    
     public void Initialize(float moveSpeed, int numberOfCandies, float idleTimePenalty, float timeoutPenalty, float offStagePenalty, RewardCandyScript[] rewardCandies, Action OnStartOfEpisode, Action OnAgentHitWall, Func<bool> OnAgentCollectedReward)
     {
         _moveSpeed = moveSpeed;
@@ -66,6 +72,9 @@ public class AgentScript : Agent
         _OnStartOfEpisode = OnStartOfEpisode;
         _OnAgentHitWall = OnAgentHitWall;
         _OnAgentCollectedReward = OnAgentCollectedReward;
+        
+        // Set the observation (input) size
+        _behaviorParameters.BrainParameters.VectorObservationSize = 3 + _numberOfCandies * 4;
     }
     
     public override void OnEpisodeBegin()
@@ -75,18 +84,25 @@ public class AgentScript : Agent
 
     public override void CollectObservations(VectorSensor sensor)
     {
+        // Add the agent's local position as input
         sensor.AddObservation(transform.localPosition);
 
         for (int candyIndex = 0; candyIndex < _rewardCandies.Length; candyIndex++)
         {
             if (_rewardCandies[candyIndex].IsRewardCollected())
             {
+                // Add the candy position as input
                 sensor.AddObservation(Vector3.zero);
+                
+                // Add the candy reward
                 sensor.AddObservation(0);
             }
             else
             {
+                // Add the candy position as input
                 sensor.AddObservation(_rewardCandies[candyIndex].transform.localPosition);
+                
+                // Add the candy reward
                 sensor.AddObservation(_rewardCandies[candyIndex].GetRewardValue());
             }
         }

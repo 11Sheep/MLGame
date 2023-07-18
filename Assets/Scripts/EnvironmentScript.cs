@@ -1,12 +1,16 @@
 using System;
 using System.Collections;
 using System.Collections.Generic;
+using DG.Tweening;
 using UnityEngine;
 using Random = UnityEngine.Random;
 
 public class EnvironmentScript : MonoBehaviour
 {
     private const float STAGE_SIZE = 4;
+    private static Color FLOOR_IDLE_COLOR = new Color(0.6f, 0.6f, 0.6f);
+    private static Color FLOOR_HIT_WALL_COLOR = new Color(1f, 0.3f, 0.3f);
+    private static Color FLOOR_CANDY_COLLECTED_COLOR = new Color(.6f, .9f, 0.6f);
     
     /// <summary>
     /// The scale of the stage (the stage is a square) 
@@ -44,10 +48,9 @@ public class EnvironmentScript : MonoBehaviour
     private RewardCandyScript[] _rewardCandies;
     
     /// <summary>
-    /// The materials for win/lose to visually show the user the learning state
+    /// The materials for the visual indication of the win/lose state
     /// </summary>
-    [SerializeField] private Material winMaterial;
-    [SerializeField] private Material loseMaterial;
+    private Material _floorMaterial;
     
     /// <summary>
     /// Floor material to change the color of the floor according to the win/lose state
@@ -114,6 +117,11 @@ public class EnvironmentScript : MonoBehaviour
         }
         
         _agentScript.Initialize(_moveSpeed, _numOfCandies, _idleTimePenalty, _timeoutPenalty, _offStagePenalty, _rewardCandies, OnStartOfEpisode, OnAgentHitWall, OnAgentCollectedReward);
+        
+        // Create materials
+        _floorMaterial = new Material(Shader.Find("Standard"));
+        _floorMaterial.color = FLOOR_IDLE_COLOR;
+        floorMeshRenderer.material = _floorMaterial;
     }
     
     private void Update()
@@ -138,6 +146,10 @@ public class EnvironmentScript : MonoBehaviour
         _episodeTimeStart = Time.time;
 
         _duringEpisode = true;
+
+        _numberOfCandiesCollected = 0;
+        
+        _floorMaterial.DOColor(FLOOR_IDLE_COLOR, 0.3f).SetDelay(0.2f);
         
         SetAgentOnBoard();
         SetCandiesOnBoard();
@@ -146,8 +158,9 @@ public class EnvironmentScript : MonoBehaviour
 
     private void OnAgentHitWall()
     {
-        floorMeshRenderer.material = loseMaterial;
-            
+        // fade out color in material tween
+        _floorMaterial.DOColor(FLOOR_HIT_WALL_COLOR, 0.3f);
+        
         Debug.Log("End episode because hit wall");
     }
 
@@ -159,9 +172,13 @@ public class EnvironmentScript : MonoBehaviour
     {
         bool needToEndEpisode = false;
         
-        floorMeshRenderer.material = winMaterial;
-
         _numberOfCandiesCollected++;
+
+        _floorMaterial.DOKill();
+        _floorMaterial.DOColor(FLOOR_CANDY_COLLECTED_COLOR, 0.15f).OnComplete(() =>
+        {
+            _floorMaterial.DOColor(FLOOR_IDLE_COLOR, 0.1f);
+        });
                 
         if (_numberOfCandiesCollected == _rewardCandies.Length)
         {
@@ -177,13 +194,13 @@ public class EnvironmentScript : MonoBehaviour
     {
         if (_isAgentLocationRandom)
         {
-            // Put in the middle
-            transform.localPosition = Vector3.zero;
+            // Put in random location
+            _agentT.localPosition = new Vector3(Random.Range(-STAGE_SIZE, STAGE_SIZE), 0, Random.Range(-STAGE_SIZE, STAGE_SIZE));
         }
         else
         {
-            // Put in random location
-            transform.localPosition = new Vector3(Random.Range(-STAGE_SIZE, STAGE_SIZE), 0, Random.Range(-STAGE_SIZE, STAGE_SIZE));
+            // Put in the middle
+            _agentT.localPosition = Vector3.zero;
         }
     }
 
@@ -202,7 +219,7 @@ public class EnvironmentScript : MonoBehaviour
                 randomPosition = new Vector3(Random.Range(-STAGE_SIZE, STAGE_SIZE), 0, Random.Range(-STAGE_SIZE, STAGE_SIZE));
                 
                 // Check if the position is too close to the agent
-                tooCloseToAgent = Vector3.Distance(randomPosition, transform.localPosition) < 1.5f;
+                tooCloseToAgent = Vector3.Distance(randomPosition, _agentT.localPosition) < 1.5f;
                 
                 // Check if the position is too close to another candy
                 tooCloseToAnotherCandy = false;
