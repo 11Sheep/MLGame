@@ -74,7 +74,8 @@ public class AgentScript : Agent
         _OnAgentCollectedReward = OnAgentCollectedReward;
         
         // Set the observation (input) size
-        _behaviorParameters.BrainParameters.VectorObservationSize = 3 + _numberOfCandies * 4;
+        // TODO
+        //_behaviorParameters.BrainParameters.VectorObservationSize = 3 + _numberOfCandies * 4;
     }
     
     public override void OnEpisodeBegin()
@@ -95,7 +96,7 @@ public class AgentScript : Agent
                 sensor.AddObservation(Vector3.zero);
                 
                 // Add the candy reward
-                sensor.AddObservation(0);
+                sensor.AddObservation(-0.001f);
             }
             else
             {
@@ -105,6 +106,16 @@ public class AgentScript : Agent
                 // Add the candy reward
                 sensor.AddObservation(_rewardCandies[candyIndex].GetRewardValue());
             }
+        }
+        
+        // TODO: 4 is hardcoded
+        for (int candyIndex = _rewardCandies.Length; candyIndex < 4; candyIndex++)
+        {
+            // Add the candy position as input
+            sensor.AddObservation(Vector3.zero);
+            
+            // Add the candy reward
+            sensor.AddObservation(0);
         }
 
         base.CollectObservations(sensor);

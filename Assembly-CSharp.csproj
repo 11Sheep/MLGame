@@ -51,9 +51,18 @@
      <Folder Include="Assets\ML-Agents" />
      <None Include="Assets\ML-Agents\Timers\SampleScene_timers.json" />
      <Folder Include="Assets\Resources" />
+     <Folder Include="Assets\ML-Agents\Examples" />
      <Folder Include="Assets\Materials" />
+     <Folder Include="Assets\ML-Agents\Examples\SharedAssets\Prefabs" />
+     <Folder Include="Assets\ML-Agents\Examples\SharedAssets\Materials" />
+     <None Include="Assets\ML-Agents\Examples\SharedAssets\Materials\GridPatternShader.shader" />
      <None Include="Assets\ML-Agents\Timers\MainScene_timers.json" />
+     <None Include="Assets\ML-Agents\Examples\SharedAssets\Materials\ShaderOutline.shader" />
+     <Folder Include="Assets\ML-Agents\Examples\SharedAssets\Meshes" />
      <Folder Include="Assets\Scenes" />
+     <None Include="Assets\ML-Agents\Examples\SharedAssets\Materials\ShaderRadialGrid.shader" />
+     <Folder Include="Assets\ML-Agents\Examples\SharedAssets\Materials\Textures" />
+     <Folder Include="Assets\ML-Agents\Examples\SharedAssets" />
      <Folder Include="Assets\prefabs\Resources" />
      <Reference Include="UnityEngine">
      <HintPath>C:\Program Files\2021.3.20f1\Editor\Data\Managed\UnityEngine\UnityEngine.dll</HintPath>
