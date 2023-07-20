@@ -1,12 +1,16 @@
 using System;
 using System.Collections;
 using System.Collections.Generic;
+using System.Timers;
+using TMPro;
 using UnityEngine;
 
 public class RewardCandyScript : MonoBehaviour
 {
     [SerializeField] private float _rewardValue = 1;
 
+    [SerializeField] private TextMeshPro _rewardText;
+    
     /// <summary>
     /// True if the reward was colelcted
     /// </summary>
@@ -28,8 +32,15 @@ public class RewardCandyScript : MonoBehaviour
         float rewardRedColor = 1 - (rewardValue / 10);
         material.color = new Color(1, rewardRedColor, rewardRedColor);
         GetComponent<MeshRenderer>().material = material;
+
+        _rewardText.text = rewardValue.ToString();
     }
-    
+
+    private void Update()
+    {
+        //_rewardText.transform.localEulerAngles += new Vector3(0, 100, 0) * Time.deltaTime;
+    }
+
     public void RewardCollected()
     {
         _rewardCollected = true;

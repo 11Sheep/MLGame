@@ -67,6 +67,11 @@ public class AgentScript : Agent
     [SerializeField] private BehaviorParameters _behaviorParameters;
 
     /// <summary>
+    /// Face / eyes / mouth
+    /// </summary>
+    [SerializeField] private GameObject[] _agentVisualElements;
+    
+    /// <summary>
     /// True if initialized
     /// </summary>
     private bool _initialized = false;
@@ -180,7 +185,7 @@ public class AgentScript : Agent
             RewardCandyScript rewardCandyScript = other.GetComponent<RewardCandyScript>();
             if (rewardCandyScript != null)
             {
-                Debug.Log("Add reward value of: " + rewardCandyScript.GetRewardValue() + " to agent");
+                // Debug.Log("Add reward value of: " + rewardCandyScript.GetRewardValue() + " to agent");
                 
                 SetReward(rewardCandyScript.GetRewardValue());
                 rewardCandyScript.RewardCollected();
@@ -203,5 +208,15 @@ public class AgentScript : Agent
         SetReward(_timeoutPenalty);
         
         EndEpisode();
+    }
+
+    public void ShowAgent(bool b)
+    {
+        for (int i = 0; i < _agentVisualElements.Length; i++)
+        {
+            _agentVisualElements[i].SetActive(b);
+        }
+        
+        GetComponent<MeshRenderer>().enabled = b;        
     }
 }

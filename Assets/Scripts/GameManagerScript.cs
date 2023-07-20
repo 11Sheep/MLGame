@@ -16,7 +16,9 @@ public class GameManagerScript : MonoBehaviour
         TutorialStep2_WaitForRewardsCollection,
         TutorialStep3_WaitForRewardsCollection,
         TutorialStep4_WaitForRewardsCollection,
-        TutorialStep5_WaitForRewardsCollection
+        TutorialStep5_WaitForRewardsCollection,
+        TutorialStep6_WaitForRewardsCollection,
+        CompetitionMode,
     }
     
     private GameStates _gameState = GameStates.None;
@@ -54,13 +56,18 @@ public class GameManagerScript : MonoBehaviour
     /// Flag so we know if the hint is needed
     /// </summary>
     private bool _userPressedKeyboard = false;
+
+    /// <summary>
+    /// Count down for level completion
+    /// </summary>
+    private float _timerCounter = 0;
     
     private void Awake()
     {
         _helloText.color = GeneralUtils.MakeColorTransparent(_helloText.color);
         _keyboardHintImage.color = GeneralUtils.MakeColorTransparent(_keyboardHintImage.color);
         _HumanPlayerBoard.gameObject.SetActive(false);
-        _HumanPlayerBoard.SetCallbacks(OnHumanRewardCollected);
+        _HumanPlayerBoard.SetCallbacks(OnHumanRewardCollected, OnHוmanFailed);
         _ComputerPlayerBoard.gameObject.SetActive(false);
         
         _humanPointsText.color = GeneralUtils.MakeColorTransparent(_humanPointsText.color);
@@ -70,7 +77,31 @@ public class GameManagerScript : MonoBehaviour
         _separatorText.color = GeneralUtils.MakeColorTransparent(_separatorText.color);
     }
 
-    private void OnHumanRewardCollected(int obj)
+    private void Update()
+    {
+        if (_timerCounter > 0)
+        {
+            _timerCounter -= Time.deltaTime;
+          
+            // Convert the float value to a TimeSpan
+            TimeSpan timeSpan = TimeSpan.FromSeconds(_timerCounter);
+            string formattedTime = $"{timeSpan.Seconds}:{timeSpan.Milliseconds:D1}";
+            _timeText.text = "Timer: " + formattedTime;
+            
+            if (_timerCounter <= 0)
+            {
+                _timerCounter = 0;
+                
+                // Jump to the next state
+                if (_gameState == GameStates.TutorialStep5_WaitForRewardsCollection)
+                {
+                    SetState(GameStates.TutorialStep6_WaitForRewardsCollection);
+                }
+            }
+        }
+    }
+
+    private void OnHumanRewardCollected(int obj, bool isEndOfRound)
     {
         int numOfPoints = (int) obj;
         
@@ -81,14 +112,14 @@ public class GameManagerScript : MonoBehaviour
         
         if (_gameState == GameStates.TutorialStep2_WaitForRewardsCollection)
         {
-            if (_HumanPoints >= 3)
+            if (isEndOfRound)
             {
                 SetState(GameStates.TutorialStep3_WaitForRewardsCollection);
             }
         }       
         else if (_gameState == GameStates.TutorialStep3_WaitForRewardsCollection)
         {
-            if (_HumanPoints >= 13)
+            if (isEndOfRound)
             {
                 SetState(GameStates.TutorialStep4_WaitForRewardsCollection);
             }
@@ -96,16 +127,45 @@ public class GameManagerScript : MonoBehaviour
         
         else if (_gameState == GameStates.TutorialStep4_WaitForRewardsCollection)
         {
-            if (_HumanPoints >= 50)
+            if (isEndOfRound)
             {
                 SetState(GameStates.TutorialStep5_WaitForRewardsCollection);
             }
+        }    
+        else if (_gameState == GameStates.TutorialStep5_WaitForRewardsCollection)
+        {
+            if (isEndOfRound)
+            {
+                _timerCounter = 0;
+                SetState(GameStates.TutorialStep6_WaitForRewardsCollection);
+            }
+        }    
+        else if (_gameState == GameStates.TutorialStep6_WaitForRewardsCollection)
+        {
+            if (isEndOfRound)
+            {
+                _timerCounter = 0;
+            }
+        }    
+    }
+
+    private void OnHוmanFailed()
+    {
+        if (_gameState == GameStates.TutorialStep5_WaitForRewardsCollection)
+        {
+            SetState(GameStates.TutorialStep6_WaitForRewardsCollection);
+        }    
+        else if (_gameState == GameStates.TutorialStep6_WaitForRewardsCollection)
+        {
+          
         }    
     }
 
     private void Start()
     {
-        SetState(GameStates.Hello);
+        // TODO:
+        //SetState(GameStates.Hello);
+        SetState(GameStates.CompetitionMode);
         
         // Add listeners
         EventManagerScript.Instance.StartListening(EventManagerScript.EVENT__PLAYER_FIRST_MOVE, (object obj) =>
@@ -177,6 +237,33 @@ public class GameManagerScript : MonoBehaviour
                     break;
                 
                 case GameStates.TutorialStep5_WaitForRewardsCollection:
+                    _HumanPlayerBoard.SetTutorialStep(4);
+                    _timeText.DOFade(1, 0.3f);
+                    _timeText.text = "Timer: 10:0";
+                    
+                    StartCoroutine(GeneralUtils.WaitAndPerform(2, () =>
+                    {
+                        _timeText.DOFade(1, 0.3f);
+                        _timerCounter = 10f;
+                    }));
+                    break;
+                
+                case GameStates.TutorialStep6_WaitForRewardsCollection:
+                    _HumanPlayerBoard.SetTutorialStep(5);
+                    _timeText.text = "Timer: 5:0";
+                    
+                    StartCoroutine(GeneralUtils.WaitAndPerform(2, () =>
+                    {
+                        _timerCounter = 5f;
+                    }));
+                    
+                    break;
+                
+                case GameStates.CompetitionMode:
+                    _HumanPlayerBoard.transform.localPosition = new Vector3(-6, 0, 0);
+                    _ComputerPlayerBoard.transform.localPosition = new Vector3(6, 0, 0);
+                    _HumanPlayerBoard.gameObject.SetActive(true);
+                    _ComputerPlayerBoard.gameObject.SetActive(true);
                     break;
             }       
             
@@ -186,9 +273,9 @@ public class GameManagerScript : MonoBehaviour
 
     #region UI
 
-    private void OnUISkipTutorial()
+    public void OnUISkipTutorial()
     {
-        
+        SetState(GameStates.CompetitionMode);
     }
 
     #endregion

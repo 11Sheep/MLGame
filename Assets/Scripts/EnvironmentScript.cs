@@ -3,6 +3,7 @@ using System.Collections;
 using System.Collections.Generic;
 using DG.Tweening;
 using UnityEngine;
+using Utils;
 using Random = UnityEngine.Random;
 
 public class EnvironmentScript : MonoBehaviour
@@ -110,7 +111,12 @@ public class EnvironmentScript : MonoBehaviour
     /// <summary>
     /// Callback to tell the parent that a reward was collected
     /// </summary>
-    private Action<int> _OnRewardCollected;
+    private Action<int, bool> _OnRewardCollected;
+
+    /// <summary>
+    /// Callback to tell the parent that the agent hit a wall
+    /// </summary>
+    private Action _OnFailed;
     
     private void Start()
     {
@@ -121,12 +127,21 @@ public class EnvironmentScript : MonoBehaviour
         _floorMaterial = new Material(Shader.Find("Standard"));
         _floorMaterial.color = FLOOR_IDLE_COLOR;
         floorMeshRenderer.material = _floorMaterial;
-        
-        Initialize();
+
+        if (!_tutorialMode)
+        {
+            Initialize();
+        }
     }
 
     private void Initialize()
     {
+        // Remove all children from the candies container
+        foreach (Transform child in _candiesContainer)
+        {
+            Destroy(child.gameObject);
+        }
+        
         // Create the candies
         _rewardCandies = new RewardCandyScript[_numOfCandies];
 
@@ -134,18 +149,19 @@ public class EnvironmentScript : MonoBehaviour
         {
             GameObject candy = Instantiate(Resources.Load("RewardCandy") as GameObject, _candiesContainer);
             _rewardCandies[candyIndex] = candy.GetComponent<RewardCandyScript>();
+            _rewardCandies[candyIndex].gameObject.SetActive(false);
         }
         
         _agentScript.Initialize(_moveSpeed, _numOfCandies, _idleTimePenalty, _timeoutPenalty, _offStagePenalty, _rewardCandies, OnStartOfEpisode, OnAgentHitWall, OnAgentCollectedReward, OnFirstMove);
+        _agentScript.ShowAgent(false);
         
         if (_tutorialMode)
         {
-            SetAgentOnBoard();
-            SetCandiesOnBoard();
+            OnStartOfEpisode();
         } 
     }
 
-    private void Update()
+    private void Update()   
     {
         if (_duringEpisode)
         {
@@ -163,18 +179,27 @@ public class EnvironmentScript : MonoBehaviour
 
     private void OnStartOfEpisode()
     {
-        // Keep the start time so we know to calculate the episode time
-        _episodeTimeStart = Time.time;
-
-        _duringEpisode = true;
-
         _numberOfCandiesCollected = 0;
         
         _floorMaterial.DOColor(FLOOR_IDLE_COLOR, 0.3f).SetDelay(0.2f);
-        
-        SetAgentOnBoard();
-        SetCandiesOnBoard();
-        SetCandiesReward();
+
+        StartCoroutine(GeneralUtils.WaitAndPerform(1, () =>
+        {
+            // Show agent
+            _agentScript.ShowAgent(true);
+            SetAgentOnBoard();
+            
+            StartCoroutine(GeneralUtils.WaitAndPerform(1, () =>
+            {
+                SetCandiesOnBoard();
+                SetCandiesReward();
+                
+                // Keep the start time so we know to calculate the episode time
+                _episodeTimeStart = Time.time;
+
+                _duringEpisode = true;
+            }));
+        }));
     }
 
     private void OnAgentHitWall()
@@ -183,6 +208,9 @@ public class EnvironmentScript : MonoBehaviour
         _floorMaterial.DOColor(FLOOR_HIT_WALL_COLOR, 0.3f);
         
         Debug.Log("End episode because hit wall");
+        
+        _agentScript.ShowAgent(false);
+        _OnFailed?.Invoke();
     }
 
     /// <summary>
@@ -195,7 +223,7 @@ public class EnvironmentScript : MonoBehaviour
         
         _numberOfCandiesCollected++;
         
-        _OnRewardCollected?.Invoke(rewardSum);
+        _OnRewardCollected?.Invoke(rewardSum, (_numberOfCandiesCollected == _rewardCandies.Length));
 
         _floorMaterial.DOKill();
         _floorMaterial.DOColor(FLOOR_CANDY_COLLECTED_COLOR, 0.15f).OnComplete(() =>
@@ -207,6 +235,8 @@ public class EnvironmentScript : MonoBehaviour
         {
             Debug.Log("End episode because all rewards were collected");
 
+            _agentScript.ShowAgent(false);
+            
             needToEndEpisode = true;
         }
 
@@ -266,6 +296,7 @@ public class EnvironmentScript : MonoBehaviour
             } while (tooCloseToAnotherCandy || tooCloseToAgent);
 
             // Put in random position
+            _rewardCandies[candyIndex].gameObject.SetActive(false);
             _rewardCandies[candyIndex].transform.localPosition = randomPosition;
         }
     }
@@ -281,12 +312,12 @@ public class EnvironmentScript : MonoBehaviour
             _rewardCandies[candyIndex].ResetCandy(reward);            
         }
         
-        Debug.Log("Total rewards on board: " + totalReward);
+        // Debug.Log("Total rewards on board: " + totalReward);
     }
 
     public void EnablePlayer(bool bShow)
     {
-        _agentScript.gameObject.SetActive(bShow);
+        _agentScript.ShowAgent(bShow);
     }
 
     public void SetTutorialStep(int step)
@@ -296,6 +327,9 @@ public class EnvironmentScript : MonoBehaviour
             _tutorialMode = true;
             _isAgentLocationRandom = false;
             _numOfCandies = 1;
+            
+            Initialize();
+
         }
         else if (step == 2)
         {
@@ -305,15 +339,24 @@ public class EnvironmentScript : MonoBehaviour
         }
         else if (step == 3)
         {
+            _isAgentLocationRandom = true;
+            _numOfCandies = 4;
+            
+            Initialize();
+        }
+        else if ((step == 4) || (step == 5)) 
+        {
+            _isAgentLocationRandom = true;
             _numOfCandies = 4;
             
             Initialize();
         }
     }
 
-    public void SetCallbacks(Action<int> onRewardCollected)
+    public void SetCallbacks(Action<int, bool> onRewardCollected, Action OnFailed)
     {
         _OnRewardCollected = onRewardCollected;
+        _OnFailed = OnFailed;
     }
 
     public int GetTotalPoints()
