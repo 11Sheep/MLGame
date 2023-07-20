@@ -39,7 +39,12 @@ public class AgentScript : Agent
     /// <summary>
     /// Callback to tell the parent that agent collected candy
     /// </summary>
-    private Func <bool> _OnAgentCollectedReward;
+    private Func <int, bool> _OnAgentCollectedReward;
+
+    /// <summary>
+    /// Callback to tell the parent about the first move (for the tutorial)
+    /// </summary>
+    private Action _OnPlayerFirstMove;
     
     /// <summary>
     /// Penalty for timeout
@@ -60,8 +65,18 @@ public class AgentScript : Agent
     /// 
     /// </summary>
     [SerializeField] private BehaviorParameters _behaviorParameters;
+
+    /// <summary>
+    /// True if initialized
+    /// </summary>
+    private bool _initialized = false;
+
+    /// <summary>
+    /// Needed for the tutorial (to show the user the hint if not moving)
+    /// </summary>
+    private bool _firstMoveReported = false;
     
-    public void Initialize(float moveSpeed, int numberOfCandies, float idleTimePenalty, float timeoutPenalty, float offStagePenalty, RewardCandyScript[] rewardCandies, Action OnStartOfEpisode, Action OnAgentHitWall, Func<bool> OnAgentCollectedReward)
+    public void Initialize(float moveSpeed, int numberOfCandies, float idleTimePenalty, float timeoutPenalty, float offStagePenalty, RewardCandyScript[] rewardCandies, Action OnStartOfEpisode, Action OnAgentHitWall, Func<int, bool> OnAgentCollectedReward, Action OnPlayerFirstMove)
     {
         _moveSpeed = moveSpeed;
         _numberOfCandies = numberOfCandies;
@@ -72,10 +87,9 @@ public class AgentScript : Agent
         _OnStartOfEpisode = OnStartOfEpisode;
         _OnAgentHitWall = OnAgentHitWall;
         _OnAgentCollectedReward = OnAgentCollectedReward;
-        
-        // Set the observation (input) size
-        // TODO
-        //_behaviorParameters.BrainParameters.VectorObservationSize = 3 + _numberOfCandies * 4;
+        _OnPlayerFirstMove = OnPlayerFirstMove;
+
+        _initialized = true;
     }
     
     public override void OnEpisodeBegin()
@@ -85,37 +99,39 @@ public class AgentScript : Agent
 
     public override void CollectObservations(VectorSensor sensor)
     {
-        // Add the agent's local position as input
-        sensor.AddObservation(transform.localPosition);
-
-        for (int candyIndex = 0; candyIndex < _rewardCandies.Length; candyIndex++)
+        if (_initialized)
         {
-            if (_rewardCandies[candyIndex].IsRewardCollected())
+            // Add the agent's local position as input
+            sensor.AddObservation(transform.localPosition);
+
+            for (int candyIndex = 0; candyIndex < _rewardCandies.Length; candyIndex++)
+            {
+                if (_rewardCandies[candyIndex].IsRewardCollected())
+                {
+                    // Add the candy position as input
+                    sensor.AddObservation(Vector3.zero);
+
+                    // Add the candy reward
+                    sensor.AddObservation(-0.001f);
+                }
+                else
+                {
+                    // Add the candy position as input
+                    sensor.AddObservation(_rewardCandies[candyIndex].transform.localPosition);
+
+                    // Add the candy reward
+                    sensor.AddObservation(_rewardCandies[candyIndex].GetRewardValue());
+                }
+            }
+
+            for (int candyIndex = _rewardCandies.Length; candyIndex < AppConfiguration.NumberOfCandies; candyIndex++)
             {
                 // Add the candy position as input
                 sensor.AddObservation(Vector3.zero);
-                
+
                 // Add the candy reward
-                sensor.AddObservation(-0.001f);
+                sensor.AddObservation(0);
             }
-            else
-            {
-                // Add the candy position as input
-                sensor.AddObservation(_rewardCandies[candyIndex].transform.localPosition);
-                
-                // Add the candy reward
-                sensor.AddObservation(_rewardCandies[candyIndex].GetRewardValue());
-            }
-        }
-        
-        // TODO: 4 is hardcoded
-        for (int candyIndex = _rewardCandies.Length; candyIndex < 4; candyIndex++)
-        {
-            // Add the candy position as input
-            sensor.AddObservation(Vector3.zero);
-            
-            // Add the candy reward
-            sensor.AddObservation(0);
         }
 
         base.CollectObservations(sensor);
@@ -139,6 +155,14 @@ public class AgentScript : Agent
         ActionSegment<float> continuesActions = actionsOut.ContinuousActions;
         continuesActions[0] = Input.GetAxisRaw("Horizontal");
         continuesActions[1] = Input.GetAxisRaw("Vertical");
+
+        // Report the first move of the player
+        if (((continuesActions[0] != 0) || (continuesActions[1] != 0)) && !_firstMoveReported)
+        {
+            _firstMoveReported = true;
+            
+            _OnPlayerFirstMove?.Invoke();
+        }
     }
 
     private void OnTriggerEnter(Collider other)
@@ -161,7 +185,7 @@ public class AgentScript : Agent
                 SetReward(rewardCandyScript.GetRewardValue());
                 rewardCandyScript.RewardCollected();
 
-                bool needToEndEpisode = _OnAgentCollectedReward();
+                bool needToEndEpisode = _OnAgentCollectedReward((int)rewardCandyScript.GetRewardValue());
 
                 if (needToEndEpisode)
                 {

@@ -101,12 +101,32 @@ public class EnvironmentScript : MonoBehaviour
     /// Indicate if we are during an episode
     /// </summary>
     private bool _duringEpisode = false;
+
+    /// <summary>
+    /// During the tutorial the agent acts differently
+    /// </summary>
+    private bool _tutorialMode = false;
+
+    /// <summary>
+    /// Callback to tell the parent that a reward was collected
+    /// </summary>
+    private Action<int> _OnRewardCollected;
     
-    private void Awake()
+    private void Start()
     {
         // Scale the stage
         _stageT.localScale = new Vector3(_stageScale, 1, _stageScale);
         
+        // Create materials
+        _floorMaterial = new Material(Shader.Find("Standard"));
+        _floorMaterial.color = FLOOR_IDLE_COLOR;
+        floorMeshRenderer.material = _floorMaterial;
+        
+        Initialize();
+    }
+
+    private void Initialize()
+    {
         // Create the candies
         _rewardCandies = new RewardCandyScript[_numOfCandies];
 
@@ -116,14 +136,15 @@ public class EnvironmentScript : MonoBehaviour
             _rewardCandies[candyIndex] = candy.GetComponent<RewardCandyScript>();
         }
         
-        _agentScript.Initialize(_moveSpeed, _numOfCandies, _idleTimePenalty, _timeoutPenalty, _offStagePenalty, _rewardCandies, OnStartOfEpisode, OnAgentHitWall, OnAgentCollectedReward);
+        _agentScript.Initialize(_moveSpeed, _numOfCandies, _idleTimePenalty, _timeoutPenalty, _offStagePenalty, _rewardCandies, OnStartOfEpisode, OnAgentHitWall, OnAgentCollectedReward, OnFirstMove);
         
-        // Create materials
-        _floorMaterial = new Material(Shader.Find("Standard"));
-        _floorMaterial.color = FLOOR_IDLE_COLOR;
-        floorMeshRenderer.material = _floorMaterial;
+        if (_tutorialMode)
+        {
+            SetAgentOnBoard();
+            SetCandiesOnBoard();
+        } 
     }
-    
+
     private void Update()
     {
         if (_duringEpisode)
@@ -168,11 +189,13 @@ public class EnvironmentScript : MonoBehaviour
     /// 
     /// </summary>
     /// <returns>true if episode ended</returns>
-    private bool OnAgentCollectedReward()
+    private bool OnAgentCollectedReward(int rewardSum)
     {
         bool needToEndEpisode = false;
         
         _numberOfCandiesCollected++;
+        
+        _OnRewardCollected?.Invoke(rewardSum);
 
         _floorMaterial.DOKill();
         _floorMaterial.DOColor(FLOOR_CANDY_COLLECTED_COLOR, 0.15f).OnComplete(() =>
@@ -188,6 +211,14 @@ public class EnvironmentScript : MonoBehaviour
         }
 
         return needToEndEpisode;
+    }
+
+    private void OnFirstMove()
+    {
+        if (_tutorialMode)
+        {
+            EventManagerScript.Instance.TriggerEvent(EventManagerScript.EVENT__PLAYER_FIRST_MOVE, null);
+        }
     }
 
     private void SetAgentOnBoard()
@@ -251,5 +282,52 @@ public class EnvironmentScript : MonoBehaviour
         }
         
         Debug.Log("Total rewards on board: " + totalReward);
+    }
+
+    public void EnablePlayer(bool bShow)
+    {
+        _agentScript.gameObject.SetActive(bShow);
+    }
+
+    public void SetTutorialStep(int step)
+    {
+        if (step == 1)
+        {
+            _tutorialMode = true;
+            _isAgentLocationRandom = false;
+            _numOfCandies = 1;
+        }
+        else if (step == 2)
+        {
+            _numOfCandies = 2;
+            
+            Initialize();
+        }
+        else if (step == 3)
+        {
+            _numOfCandies = 4;
+            
+            Initialize();
+        }
+    }
+
+    public void SetCallbacks(Action<int> onRewardCollected)
+    {
+        _OnRewardCollected = onRewardCollected;
+    }
+
+    public int GetTotalPoints()
+    {
+        int totalPoints = 0;
+        
+        for (int candyIndex = 0; candyIndex < _rewardCandies.Length; candyIndex++)
+        {
+            if (_rewardCandies[candyIndex].IsRewardCollected())
+            {
+                totalPoints += (int)_rewardCandies[candyIndex].GetRewardValue();
+            }
+        }
+
+        return totalPoints;
     }
 }

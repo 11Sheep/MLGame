@@ -41,29 +41,76 @@
     <ImplicitlyExpandDesignTimeFacades>false</ImplicitlyExpandDesignTimeFacades>
   </PropertyGroup>
   <ItemGroup>
+     <Compile Include="Assets\Scripts\Utils\EventManagerScript.cs" />
+     <Compile Include="Assets\Scripts\Utils\Singleton\Singleton.cs" />
+     <Compile Include="Assets\Scripts\GeneralUtils.cs" />
+     <Compile Include="Assets\Scripts\Utils\JsonHelper.cs" />
+     <Compile Include="Assets\Scripts\Utils\UI\NumberPickerElement.cs" />
+     <Compile Include="Assets\Scripts\EnvironmentScript.cs" />
+     <Compile Include="Assets\Scripts\GameManagerScript.cs" />
+     <Compile Include="Assets\Scripts\Utils\URLParameters.cs" />
+     <Compile Include="Assets\Scripts\Utils\FPSCounter.cs" />
      <Compile Include="Assets\Scripts\AgentScript.cs" />
      <Compile Include="Assets\Scripts\RewardCandyScript.cs" />
-     <Compile Include="Assets\Scripts\EnvironmentScript.cs" />
+     <Compile Include="Assets\Scripts\Utils\AudioManager.cs" />
+     <Compile Include="Assets\Scripts\Utils\AnalyticUtils.cs" />
+     <Compile Include="Assets\Scripts\Utils\UI\NumberPicker.cs" />
+     <Compile Include="Assets\Scripts\Utils\Singleton\MonoBehaviourExtended.cs" />
+     <Compile Include="Assets\Scripts\AppConfiguration.cs" />
      <Folder Include="Assets" />
      <Folder Include="Assets\prefabs" />
+     <None Include="Assets\TextMesh Pro\Shaders\TMPro.cginc" />
+     <None Include="Assets\TextMesh Pro\Shaders\TMP_SDF-Mobile Overlay.shader" />
+     <Folder Include="Assets\TextMesh Pro\Sprites" />
+     <Folder Include="Assets\TextMesh Pro\Resources\Sprite Assets" />
      <Folder Include="Assets\ML-Agents\Timers" />
+     <Folder Include="Assets\Scripts\Utils" />
+     <None Include="Assets\TextMesh Pro\Shaders\TMP_Bitmap.shader" />
      <Folder Include="Assets\Scripts" />
+     <Folder Include="Assets\TextMesh Pro\Resources\Fonts &amp; Materials" />
+     <None Include="Assets\TextMesh Pro\Shaders\TMPro_Mobile.cginc" />
+     <None Include="Assets\TextMesh Pro\Shaders\TMP_SDF SSD.shader" />
+     <Folder Include="Assets\TextMesh Pro\Resources" />
      <Folder Include="Assets\ML-Agents" />
      <None Include="Assets\ML-Agents\Timers\SampleScene_timers.json" />
+     <None Include="Assets\TextMesh Pro\Shaders\TMP_SDF-Surface-Mobile.shader" />
      <Folder Include="Assets\Resources" />
+     <Folder Include="Assets\Scripts\Utils\UI" />
      <Folder Include="Assets\ML-Agents\Examples" />
+     <Folder Include="Assets\TextMesh Pro" />
+     <None Include="Assets\TextMesh Pro\Shaders\TMP_SDF-Surface.shader" />
+     <None Include="Assets\TextMesh Pro\Sprites\EmojiOne Attribution.txt" />
+     <None Include="Assets\TextMesh Pro\Shaders\TMP_Bitmap-Custom-Atlas.shader" />
+     <None Include="Assets\TextMesh Pro\Shaders\TMP_SDF.shader" />
+     <None Include="Assets\TextMesh Pro\Shaders\TMP_SDF-Mobile SSD.shader" />
+     <None Include="Assets\TextMesh Pro\Resources\LineBreaking Leading Characters.txt" />
      <Folder Include="Assets\Materials" />
+     <None Include="Assets\TextMesh Pro\Shaders\TMPro_Properties.cginc" />
+     <None Include="Assets\TextMesh Pro\Shaders\TMPro_Surface.cginc" />
+     <Folder Include="Assets\TextMesh Pro\Shaders" />
      <Folder Include="Assets\ML-Agents\Examples\SharedAssets\Prefabs" />
+     <Folder Include="Assets\TextMesh Pro\Resources\Style Sheets" />
+     <Folder Include="Assets\TextMesh Pro\Fonts" />
+     <None Include="Assets\TextMesh Pro\Resources\LineBreaking Following Characters.txt" />
      <Folder Include="Assets\ML-Agents\Examples\SharedAssets\Materials" />
      <None Include="Assets\ML-Agents\Examples\SharedAssets\Materials\GridPatternShader.shader" />
+     <None Include="Assets\TextMesh Pro\Shaders\TMP_SDF-Mobile Masking.shader" />
      <None Include="Assets\ML-Agents\Timers\MainScene_timers.json" />
      <None Include="Assets\ML-Agents\Examples\SharedAssets\Materials\ShaderOutline.shader" />
+     <None Include="Assets\TextMesh Pro\Shaders\TMP_SDF Overlay.shader" />
      <Folder Include="Assets\ML-Agents\Examples\SharedAssets\Meshes" />
+     <None Include="Assets\TextMesh Pro\Shaders\TMP_Bitmap-Mobile.shader" />
      <Folder Include="Assets\Scenes" />
+     <None Include="Assets\TextMesh Pro\Fonts\LiberationSans - OFL.txt" />
+     <Folder Include="Assets\TextMesh Pro\Documentation" />
      <None Include="Assets\ML-Agents\Examples\SharedAssets\Materials\ShaderRadialGrid.shader" />
      <Folder Include="Assets\ML-Agents\Examples\SharedAssets\Materials\Textures" />
+     <None Include="Assets\TextMesh Pro\Shaders\TMP_SDF-Mobile.shader" />
      <Folder Include="Assets\ML-Agents\Examples\SharedAssets" />
+     <Folder Include="Assets\Scripts\Utils\Singleton" />
      <Folder Include="Assets\prefabs\Resources" />
+     <None Include="Assets\TextMesh Pro\Sprites\EmojiOne.json" />
+     <None Include="Assets\TextMesh Pro\Shaders\TMP_Sprite.shader" />
      <Reference Include="UnityEngine">
      <HintPath>C:\Program Files\2021.3.20f1\Editor\Data\Managed\UnityEngine\UnityEngine.dll</HintPath>
      </Reference>
@@ -313,14 +360,14 @@
      <Reference Include="System.IO.Abstractions">
      <HintPath>C:\Users\Lior\Documents\UnityProjects\MLGame\Library\PackageCache\com.unity.ml-agents@2.0.1\Plugins\System.IO.Abstractions.dll</HintPath>
      </Reference>
-     <Reference Include="Unity.Burst.Unsafe">
-     <HintPath>C:\Users\Lior\Documents\UnityProjects\MLGame\Library\PackageCache\com.unity.burst@1.6.6\Unity.Burst.Unsafe.dll</HintPath>
-     </Reference>
      <Reference Include="Unity.Burst.Cecil.Mdb">
      <HintPath>C:\Users\Lior\Documents\UnityProjects\MLGame\Library\PackageCache\com.unity.burst@1.6.6\Unity.Burst.CodeGen\Unity.Burst.Cecil.Mdb.dll</HintPath>
      </Reference>
      <Reference Include="Google.Protobuf">
      <HintPath>C:\Users\Lior\Documents\UnityProjects\MLGame\Library\PackageCache\com.unity.barracuda@2.0.0\Barracuda\Runtime\Plugins\ProtoBuffer\Google.Protobuf.dll</HintPath>
+     </Reference>
+     <Reference Include="Unity.Burst.Unsafe">
+     <HintPath>C:\Users\Lior\Documents\UnityProjects\MLGame\Library\PackageCache\com.unity.burst@1.6.6\Unity.Burst.Unsafe.dll</HintPath>
      </Reference>
      <Reference Include="Unity.Burst.Cecil.Pdb">
      <HintPath>C:\Users\Lior\Documents\UnityProjects\MLGame\Library\PackageCache\com.unity.burst@1.6.6\Unity.Burst.CodeGen\Unity.Burst.Cecil.Pdb.dll</HintPath>
@@ -330,6 +377,9 @@
      </Reference>
      <Reference Include="Unity.Burst.Cecil.Rocks">
      <HintPath>C:\Users\Lior\Documents\UnityProjects\MLGame\Library\PackageCache\com.unity.burst@1.6.6\Unity.Burst.CodeGen\Unity.Burst.Cecil.Rocks.dll</HintPath>
+     </Reference>
+     <Reference Include="DOTween">
+     <HintPath>C:\Users\Lior\Documents\UnityProjects\MLGame\Assets\Plugins\Demigiant\DOTween\DOTween.dll</HintPath>
      </Reference>
      <Reference Include="Unity.VisualScripting.Antlr3.Runtime">
      <HintPath>C:\Users\Lior\Documents\UnityProjects\MLGame\Library\PackageCache\com.unity.visualscripting@1.8.0\Runtime\VisualScripting.Flow\Dependencies\NCalc\Unity.VisualScripting.Antlr3.Runtime.dll</HintPath>
@@ -345,9 +395,6 @@
      </Reference>
      <Reference Include="Grpc.Core">
      <HintPath>C:\Users\Lior\Documents\UnityProjects\MLGame\Library\PackageCache\com.unity.ml-agents@2.0.1\Plugins\ProtoBuffer\Grpc.Core.dll</HintPath>
-     </Reference>
-     <Reference Include="DOTween">
-     <HintPath>C:\Users\Lior\Documents\UnityProjects\MLGame\Assets\Plugins\Demigiant\DOTween\DOTween.dll</HintPath>
      </Reference>
      <Reference Include="UnityEditor.iOS.Extensions.Xcode">
      <HintPath>C:\Program Files\2021.3.20f1\Editor\Data\PlaybackEngines\iOSSupport\UnityEditor.iOS.Extensions.Xcode.dll</HintPath>
@@ -736,14 +783,14 @@
      <Reference Include="Unity.Barracuda.iOSBLAS">
      <HintPath>C:\Users\Lior\Documents\UnityProjects\MLGame\Library\ScriptAssemblies\Unity.Barracuda.iOSBLAS.dll</HintPath>
      </Reference>
-     <Reference Include="Unity.Barracuda.BurstBLAS">
-     <HintPath>C:\Users\Lior\Documents\UnityProjects\MLGame\Library\ScriptAssemblies\Unity.Barracuda.BurstBLAS.dll</HintPath>
-     </Reference>
      <Reference Include="Unity.Barracuda.ONNX">
      <HintPath>C:\Users\Lior\Documents\UnityProjects\MLGame\Library\ScriptAssemblies\Unity.Barracuda.ONNX.dll</HintPath>
      </Reference>
      <Reference Include="Unity.VSCode.Editor">
      <HintPath>C:\Users\Lior\Documents\UnityProjects\MLGame\Library\ScriptAssemblies\Unity.VSCode.Editor.dll</HintPath>
+     </Reference>
+     <Reference Include="Unity.Barracuda.BurstBLAS">
+     <HintPath>C:\Users\Lior\Documents\UnityProjects\MLGame\Library\ScriptAssemblies\Unity.Barracuda.BurstBLAS.dll</HintPath>
      </Reference>
      <Reference Include="Unity.TextMeshPro.Editor">
      <HintPath>C:\Users\Lior\Documents\UnityProjects\MLGame\Library\ScriptAssemblies\Unity.TextMeshPro.Editor.dll</HintPath>
@@ -774,6 +821,9 @@
      </Reference>
      <Reference Include="Unity.Burst.Editor">
      <HintPath>C:\Users\Lior\Documents\UnityProjects\MLGame\Library\ScriptAssemblies\Unity.Burst.Editor.dll</HintPath>
+     </Reference>
+     <Reference Include="Mixpanel.Editor">
+     <HintPath>C:\Users\Lior\Documents\UnityProjects\MLGame\Library\ScriptAssemblies\Mixpanel.Editor.dll</HintPath>
      </Reference>
      <Reference Include="Unity.VisualScripting.SettingsProvider.Editor">
      <HintPath>C:\Users\Lior\Documents\UnityProjects\MLGame\Library\ScriptAssemblies\Unity.VisualScripting.SettingsProvider.Editor.dll</HintPath>
@@ -829,11 +879,14 @@
      <Reference Include="Unity.Barracuda.MacBLAS">
      <HintPath>C:\Users\Lior\Documents\UnityProjects\MLGame\Library\ScriptAssemblies\Unity.Barracuda.MacBLAS.dll</HintPath>
      </Reference>
-     <Reference Include="Unity.VisualScripting.State">
-     <HintPath>C:\Users\Lior\Documents\UnityProjects\MLGame\Library\ScriptAssemblies\Unity.VisualScripting.State.dll</HintPath>
-     </Reference>
      <Reference Include="Unity.ML-Agents.Editor">
      <HintPath>C:\Users\Lior\Documents\UnityProjects\MLGame\Library\ScriptAssemblies\Unity.ML-Agents.Editor.dll</HintPath>
+     </Reference>
+     <Reference Include="Mixpanel">
+     <HintPath>C:\Users\Lior\Documents\UnityProjects\MLGame\Library\ScriptAssemblies\Mixpanel.dll</HintPath>
+     </Reference>
+     <Reference Include="Unity.VisualScripting.State">
+     <HintPath>C:\Users\Lior\Documents\UnityProjects\MLGame\Library\ScriptAssemblies\Unity.VisualScripting.State.dll</HintPath>
      </Reference>
   </ItemGroup>
   <ItemGroup>

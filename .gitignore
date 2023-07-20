@@ -4,3 +4,6 @@ UserSettings/
 Temp/
 obj/
 Logs/
+Assets/ML-Agents/
+results/
+venv/
