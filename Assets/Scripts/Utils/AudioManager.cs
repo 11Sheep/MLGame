@@ -12,9 +12,10 @@ public class AudioManager : Singleton<AudioManager>
     private AudioSource soundsAudioGenerealSource;
     private AudioClip[] generalSounds;
 
-    public static string Sound_general_click = "GenClick";
-    public static string Sound_general_fail = "Fail";
-    public static string Sound_general_success = "Success";
+    public static string Sound__hello = "Hello";
+    public static string Sound__showCandy = "ShowCandy";
+    public static string Sound__showPlayer = "ShowPlayer";
+    public static string Sound__collectCandy ="CollectDandy";
  
     public void Initialize()
     {

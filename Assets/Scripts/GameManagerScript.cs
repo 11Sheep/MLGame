@@ -102,6 +102,9 @@ public class GameManagerScript : MonoBehaviour
     
     private void Awake()
     {
+        // Set up the audio
+        AudioManager.Instance.Initialize();
+        
         _helloText.color = GeneralUtils.MakeColorTransparent(_helloText.color);
         _keyboardHintImage.color = GeneralUtils.MakeColorTransparent(_keyboardHintImage.color);
         _HumanPlayerBoard.gameObject.SetActive(false);
@@ -123,6 +126,23 @@ public class GameManagerScript : MonoBehaviour
         _lowerCanvasGroup.alpha = 0;
         
         _skipTutorialButton.GetComponent<CanvasGroup>().alpha = 0;
+    }
+    
+    private void Start()
+    {
+        // TODO:
+        // SetState(GameStates.Hello);
+        SetState(GameStates.CompetitionMode);
+        
+        // Add listeners
+        EventManagerScript.Instance.StartListening(EventManagerScript.EVENT__PLAYER_FIRST_MOVE, (object obj) =>
+        {
+            _userPressedKeyboard = true;
+            
+            // Hide the keyboard hint is presented
+            _keyboardHintImage.DOKill();
+            _keyboardHintImage.DOFade(0, 0.5f);    
+        });
     }
 
     private void Update()
@@ -219,6 +239,8 @@ public class GameManagerScript : MonoBehaviour
 
     private void OnHumanRewardCollected(int obj, bool isEndOfRound)
     {
+        AudioManager.Instance.PlayGeneralSound(AudioManager.Sound__collectCandy);
+        
         int numOfPoints = (int) obj;
         
         _HumanRoundPoints += numOfPoints;
@@ -281,6 +303,8 @@ public class GameManagerScript : MonoBehaviour
 
     private void OnComputerRewardCollected(int obj, bool isEndOfRound)
     {
+        AudioManager.Instance.PlayGeneralSound(AudioManager.Sound__collectCandy);
+        
         int numOfPoints = (int) obj;
 
         _ComputerRoundPoints += numOfPoints;
@@ -304,23 +328,6 @@ public class GameManagerScript : MonoBehaviour
         }
     }
 
-    private void Start()
-    {
-        // TODO:
-        SetState(GameStates.Hello);
-        //SetState(GameStates.CompetitionMode);
-        
-        // Add listeners
-        EventManagerScript.Instance.StartListening(EventManagerScript.EVENT__PLAYER_FIRST_MOVE, (object obj) =>
-        {
-            _userPressedKeyboard = true;
-            
-            // Hide the keyboard hint is presented
-            _keyboardHintImage.DOKill();
-            _keyboardHintImage.DOFade(0, 0.5f);    
-        });
-    }
-
     private void SetState(GameStates newState)
     {
         if (newState != _gameState)
@@ -332,7 +339,13 @@ public class GameManagerScript : MonoBehaviour
             switch (newState)
             {
                 case GameStates.Hello:
-                    _helloText.DOFade(1, 1).SetDelay(2).OnComplete(() =>
+
+                    StartCoroutine(GeneralUtils.WaitAndPerform(0.8f, () =>
+                    {
+                        AudioManager.Instance.PlayGeneralSound(AudioManager.Sound__hello);
+                    }));
+                    
+                    _helloText.DOFade(1, 1).SetDelay(1).OnComplete(() =>
                     {
                         _helloText.DOFade(0, 1).SetDelay(2).OnComplete(() =>
                         {

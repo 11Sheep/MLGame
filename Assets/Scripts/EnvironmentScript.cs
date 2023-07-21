@@ -10,7 +10,7 @@ public class EnvironmentScript : MonoBehaviour
 {
     private static Color FLOOR_IDLE_COLOR = new Color(0.6f, 0.6f, 0.6f);
     private static Color FLOOR_HIT_WALL_COLOR = new Color(1f, 0.3f, 0.3f);
-    private static Color FLOOR_CANDY_COLLECTED_COLOR = new Color(.6f, .9f, 0.6f);
+    private static Color FLOOR_CANDY_COLLECTED_COLOR = new Color(.4f, .7f, 0.4f);
     
     /// <summary>
     /// The scale of the stage (the stage is a square) 
@@ -195,6 +195,8 @@ public class EnvironmentScript : MonoBehaviour
             _agentScript.ShowAgent(true);
             SetAgentOnBoard(_agentLocation);
             
+            AudioManager.Instance.PlayGeneralSound(AudioManager.Sound__showPlayer);
+            
             StartCoroutine(GeneralUtils.WaitAndPerform(1, () =>
             {
                 SetCandiesOnBoard(_candiesLocation);
@@ -233,7 +235,7 @@ public class EnvironmentScript : MonoBehaviour
         _OnRewardCollected?.Invoke(rewardSum, (_numberOfCandiesCollected == _rewardCandies.Length));
 
         _floorMaterial.DOKill();
-        _floorMaterial.DOColor(FLOOR_CANDY_COLLECTED_COLOR, 0.15f).OnComplete(() =>
+        _floorMaterial.DOColor(FLOOR_CANDY_COLLECTED_COLOR, 0.05f).OnComplete(() =>
         {
             _floorMaterial.DOColor(FLOOR_IDLE_COLOR, 0.1f);
         });
@@ -273,7 +275,7 @@ public class EnvironmentScript : MonoBehaviour
             _rewardCandies[candyIndex].transform.localPosition = candiesLocation[candyIndex];
         }
     }
-
+    
     private void SetCandiesReward()
     {
         float totalReward = 0;
@@ -282,10 +284,22 @@ public class EnvironmentScript : MonoBehaviour
         {
             float reward = (candyIndex + 1) * 2;
             totalReward += reward;
-            _rewardCandies[candyIndex].ResetCandy(reward);            
+            
+            
+            StartCoroutine(SetCandiesRewardHelper(0.05f * candyIndex, candyIndex, reward));
         }
         
         // Debug.Log("Total rewards on board: " + totalReward);
+    }
+    
+        
+    private IEnumerator SetCandiesRewardHelper(float showTime, int candyIndex, float reward)
+    {
+        yield return new WaitForSeconds(showTime);
+        
+        _rewardCandies[candyIndex].ResetCandy(reward);           
+                
+        AudioManager.Instance.PlayGeneralSound(AudioManager.Sound__showCandy);
     }
 
     public void EnablePlayer(bool bShow)

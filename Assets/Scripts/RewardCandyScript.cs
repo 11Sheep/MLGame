@@ -2,14 +2,21 @@ using System;
 using System.Collections;
 using System.Collections.Generic;
 using System.Timers;
+using DG.Tweening;
 using TMPro;
 using UnityEngine;
+using Random = UnityEngine.Random;
 
 public class RewardCandyScript : MonoBehaviour
 {
     [SerializeField] private float _rewardValue = 1;
 
     [SerializeField] private TextMeshPro _rewardText;
+
+    /// <summary>
+    /// Moves the candy just for fun
+    /// </summary>
+    private float _moveEffectTimer = 0;
     
     /// <summary>
     /// True if the reward was colelcted
@@ -38,7 +45,16 @@ public class RewardCandyScript : MonoBehaviour
 
     private void Update()
     {
-        //_rewardText.transform.localEulerAngles += new Vector3(0, 100, 0) * Time.deltaTime;
+        _moveEffectTimer -= Time.deltaTime;
+
+        if (_moveEffectTimer <= 0)
+        {
+            _moveEffectTimer = Random.Range(0.5f, 1.5f);
+            
+            float moveEffectHeight = Random.Range(0f, 0.15f);
+
+            transform.DOMoveY(moveEffectHeight, _moveEffectTimer);
+        }
     }
 
     public void RewardCollected()
