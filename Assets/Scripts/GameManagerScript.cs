@@ -9,8 +9,11 @@ using Random = UnityEngine.Random;
 
 public class GameManagerScript : MonoBehaviour
 {
+    private const int NUMBER_OF_COMPETITION_ROUNDS = 10;
     private static Color AGENT_HUMAN_COLOR = new Color(0.49f, 0.38f, 0.68f);
     private static Color AGENT_COMPUTER_COLOR = new Color(0.14f, 0.52f, 0.83f);
+    
+    private enum WhoWonEnum { None, Human, Computer }
     
     private const float STAGE_SIZE = 4;
     
@@ -25,6 +28,7 @@ public class GameManagerScript : MonoBehaviour
         TutorialStep5_WaitForRewardsCollection,
         TutorialStep6_WaitForRewardsCollection,
         CompetitionMode,
+        CompetitionFinished,
     }
     
     private GameStates _gameState = GameStates.None;
@@ -51,12 +55,27 @@ public class GameManagerScript : MonoBehaviour
 
     [SerializeField] private TMPro.TextMeshProUGUI _humanPointsText;
     [SerializeField] private TMPro.TextMeshProUGUI _computerPointsText;
-    [SerializeField] private TMPro.TextMeshProUGUI _timeText;
-    [SerializeField] private TMPro.TextMeshProUGUI _roundText;
-    [SerializeField] private TMPro.TextMeshProUGUI _separatorText;
 
-    private int _HumanPoints = 0;
-    private int _ComputerPoints = 0;
+    /// <summary>
+    /// We need to show this button only when in tutorial mode
+    /// </summary>
+    [SerializeField] private Button _skipTutorialButton;
+    
+    /// <summary>
+    /// The lower status bar. we only show it during competition mode
+    /// </summary>
+    [SerializeField] private CanvasGroup _lowerCanvasGroup;
+    
+    private int _HumanTotalPoints = 0;
+    private int _ComputerTotalPoints = 0;
+    
+    private int _currentRound = 0;
+
+    private int _humanWins = 0;
+    private int _computerWins = 0;
+
+    private int _HumanRoundPoints = 0;
+    private int _ComputerRoundPoints = 0;
     
     /// <summary>
     /// Flag so we know if the hint is needed
@@ -68,17 +87,27 @@ public class GameManagerScript : MonoBehaviour
     /// </summary>
     private float _timerCounter = 0;
 
+    /// <summary>
+    /// Time for the current round
+    /// </summary>
+    private float _roundTime = 0;
+
     [SerializeField] private CircleProgressElement _HumanUIProgress;
     [SerializeField] private CircleProgressElement _ComputerUIProgress;
+    
+    /// <summary>
+    /// The timer ui element
+    /// </summary>
+    [SerializeField] private Slider _timerSlider;
     
     private void Awake()
     {
         _helloText.color = GeneralUtils.MakeColorTransparent(_helloText.color);
         _keyboardHintImage.color = GeneralUtils.MakeColorTransparent(_keyboardHintImage.color);
         _HumanPlayerBoard.gameObject.SetActive(false);
-        _HumanPlayerBoard.SetCallbacks(OnHumanRewardCollected, OnHumanFailed);
+        _HumanPlayerBoard.SetCallbacks(OnHumanRewardCollected);
         _ComputerPlayerBoard.gameObject.SetActive(false);
-        _ComputerPlayerBoard.SetCallbacks(OnComputerRewardCollected, OnComputerFailed);
+        _ComputerPlayerBoard.SetCallbacks(OnComputerRewardCollected);
         
         (Vector3 agentLocation, Vector3[] rewardLocations) = GetLocationsForAgentAndCandies(4, false);
                 
@@ -87,12 +116,13 @@ public class GameManagerScript : MonoBehaviour
         
         _humanPointsText.color = GeneralUtils.MakeColorTransparent(_humanPointsText.color);
         _computerPointsText.color = GeneralUtils.MakeColorTransparent(_computerPointsText.color);
-        _roundText.color = GeneralUtils.MakeColorTransparent(_roundText.color);
-        _timeText.color = GeneralUtils.MakeColorTransparent(_timeText.color);
-        _separatorText.color = GeneralUtils.MakeColorTransparent(_separatorText.color);
         
         _HumanUIProgress.Initialize(AGENT_HUMAN_COLOR);
         _ComputerUIProgress.Initialize(AGENT_COMPUTER_COLOR);
+        
+        _lowerCanvasGroup.alpha = 0;
+        
+        _skipTutorialButton.GetComponent<CanvasGroup>().alpha = 0;
     }
 
     private void Update()
@@ -101,10 +131,7 @@ public class GameManagerScript : MonoBehaviour
         {
             _timerCounter -= Time.deltaTime;
           
-            // Convert the float value to a TimeSpan
-            TimeSpan timeSpan = TimeSpan.FromSeconds(_timerCounter);
-            string formattedTime = $"{timeSpan.Seconds}:{timeSpan.Milliseconds:D1}";
-            _timeText.text = "Timer: " + formattedTime;
+            _timerSlider.value = _timerCounter / _roundTime;             
             
             if (_timerCounter <= 0)
             {
@@ -115,7 +142,78 @@ public class GameManagerScript : MonoBehaviour
                 {
                     SetState(GameStates.TutorialStep6_WaitForRewardsCollection);
                 }
+                else if (_gameState == GameStates.CompetitionMode)
+                {
+                    // See who is the winner
+                    if (_HumanRoundPoints > _ComputerRoundPoints)
+                    {
+                        CompetitionRoundFinished(WhoWonEnum.Human, 5);
+                    }
+                    else if (_HumanRoundPoints < _ComputerRoundPoints)
+                    {
+                        CompetitionRoundFinished(WhoWonEnum.Computer, 5);
+                    }
+                    else
+                    {
+                        CompetitionRoundFinished(WhoWonEnum.None, 5);
+                    }
+                }
             }
+        }
+    }
+
+    private void CompetitionRoundFinished(WhoWonEnum whoWon, float timeForRound)
+    {
+        _timerCounter = 0;
+        
+        _roundTime = timeForRound;
+        
+        // Show the timer only if we have time usage in this round
+        _timerSlider.gameObject.SetActive(timeForRound > 0);
+        
+        if (whoWon == WhoWonEnum.Human)
+        {
+            _ComputerPlayerBoard.OtherPlayerWon();
+            _humanWins++;
+            _currentRound++;
+        }
+        else if (whoWon == WhoWonEnum.Computer)
+        {
+            _HumanPlayerBoard.OtherPlayerWon();
+            _computerWins++;
+            _currentRound++;
+        }
+
+        if ((_computerWins == NUMBER_OF_COMPETITION_ROUNDS) || (_humanWins == NUMBER_OF_COMPETITION_ROUNDS))
+        {
+            SetState(GameStates.CompetitionFinished);
+        }
+        else
+        {
+            (Vector3 agentLocation, Vector3[] rewardLocations) = GetLocationsForAgentAndCandies(4, false);
+                
+            _HumanPlayerBoard.SetLocations(agentLocation, rewardLocations);
+            _ComputerPlayerBoard.SetLocations(agentLocation, rewardLocations);
+                
+            _HumanPlayerBoard.StartAnotherMatch();
+            _ComputerPlayerBoard.StartAnotherMatch();
+
+            if (whoWon == WhoWonEnum.Human)
+            {
+                _HumanUIProgress.AddProgress();
+            }
+            else
+            {
+                _ComputerUIProgress.AddProgress();
+            }
+
+            StartCoroutine(GeneralUtils.WaitAndPerform(2, () =>
+            {
+                _humanPointsText.text = "Human: 0";
+                _computerPointsText.text = "Computer: 0";
+                
+                _timerCounter = _roundTime;
+            }));
         }
     }
 
@@ -123,26 +221,17 @@ public class GameManagerScript : MonoBehaviour
     {
         int numOfPoints = (int) obj;
         
-        _HumanPoints += numOfPoints;
+        _HumanRoundPoints += numOfPoints;
+        _HumanTotalPoints += numOfPoints;
         // Show the points
-        _humanPointsText.text = "Human: " + _HumanPoints.ToString();
+        _humanPointsText.text = "Human: " + _HumanRoundPoints.ToString();
         _humanPointsText.DOFade(1, 0.5f);
 
         if (_gameState == GameStates.CompetitionMode)
         {
             if (isEndOfRound)
             {
-                _ComputerPlayerBoard.OtherPlayerWon();
-
-                (Vector3 agentLocation, Vector3[] rewardLocations) = GetLocationsForAgentAndCandies(4, false);
-                
-                _HumanPlayerBoard.SetLocations(agentLocation, rewardLocations);
-                _ComputerPlayerBoard.SetLocations(agentLocation, rewardLocations);
-                
-                _HumanPlayerBoard.StartAnotherMatch();
-                _ComputerPlayerBoard.StartAnotherMatch();
-                
-                _HumanUIProgress.AddProgress();
+                CompetitionRoundFinished(WhoWonEnum.Human, 5);
             }
         }
         else if (_gameState == GameStates.TutorialStep2_WaitForRewardsCollection)
@@ -182,59 +271,44 @@ public class GameManagerScript : MonoBehaviour
                 _timerCounter = 0;
             }
         }    
-    }
-
-    private void OnHumanFailed()
-    {
-        // TODO: make that it is impossible to fall and fail (only by time)
         
-        if (_gameState == GameStates.TutorialStep5_WaitForRewardsCollection)
+        if (isEndOfRound)
         {
-            SetState(GameStates.TutorialStep6_WaitForRewardsCollection);
-        }    
-        else if (_gameState == GameStates.TutorialStep6_WaitForRewardsCollection)
-        {
-          
-        }    
+            _ComputerRoundPoints = 0;
+            _HumanRoundPoints = 0;
+        }
     }
 
     private void OnComputerRewardCollected(int obj, bool isEndOfRound)
     {
         int numOfPoints = (int) obj;
 
-        _ComputerPoints += numOfPoints;
+        _ComputerRoundPoints += numOfPoints;
+        _ComputerTotalPoints += numOfPoints;
         // Show the points
-        _computerPointsText.text = "Computer: " + _ComputerPoints.ToString();
+        _computerPointsText.text = "Computer: " + _ComputerRoundPoints.ToString();
         _computerPointsText.DOFade(1, 0.5f);
         
         if (_gameState == GameStates.CompetitionMode)
         {
             if (isEndOfRound)
             {
-                _HumanPlayerBoard.OtherPlayerWon();
-
-                (Vector3 agentLocation, Vector3[] rewardLocations) = GetLocationsForAgentAndCandies(4, false);
-                
-                _HumanPlayerBoard.SetLocations(agentLocation, rewardLocations);
-                _ComputerPlayerBoard.SetLocations(agentLocation, rewardLocations);
-                
-                _HumanPlayerBoard.StartAnotherMatch();
-                _ComputerPlayerBoard.StartAnotherMatch();
-                
-                _ComputerUIProgress.AddProgress();
+                CompetitionRoundFinished(WhoWonEnum.Computer, 5);
             }
         }
-    }
-    
-    private void OnComputerFailed()
-    {
+
+        if (isEndOfRound)
+        {
+            _ComputerRoundPoints = 0;
+            _HumanRoundPoints = 0;
+        }
     }
 
     private void Start()
     {
         // TODO:
-        //SetState(GameStates.Hello);
-        SetState(GameStates.CompetitionMode);
+        SetState(GameStates.Hello);
+        //SetState(GameStates.CompetitionMode);
         
         // Add listeners
         EventManagerScript.Instance.StartListening(EventManagerScript.EVENT__PLAYER_FIRST_MOVE, (object obj) =>
@@ -268,6 +342,9 @@ public class GameManagerScript : MonoBehaviour
                     break;
                 
                 case GameStates.TutorialStep1_ShowPlayerEnv:
+                    
+                    _skipTutorialButton.GetComponent<CanvasGroup>().DOFade(1, 0.5f);
+                    
                     _HumanPlayerBoard.SetTutorialStep(1);
                     _HumanPlayerBoard.gameObject.SetActive(true);
                     _HumanPlayerBoard.transform.localPosition = new Vector3(0, 0, 0);
@@ -307,22 +384,20 @@ public class GameManagerScript : MonoBehaviour
                 
                 case GameStates.TutorialStep5_WaitForRewardsCollection:
                     _HumanPlayerBoard.SetTutorialStep(4);
-                    _timeText.DOFade(1, 0.3f);
-                    _timeText.text = "Timer: 10:0";
                     
                     StartCoroutine(GeneralUtils.WaitAndPerform(2, () =>
                     {
-                        _timeText.DOFade(1, 0.3f);
+                        _roundTime = 10f;
                         _timerCounter = 10f;
                     }));
                     break;
                 
                 case GameStates.TutorialStep6_WaitForRewardsCollection:
                     _HumanPlayerBoard.SetTutorialStep(5);
-                    _timeText.text = "Timer: 5:0";
                     
                     StartCoroutine(GeneralUtils.WaitAndPerform(2, () =>
                     {
+                        _roundTime = 5f;
                         _timerCounter = 5f;
                     }));
                     
@@ -333,6 +408,7 @@ public class GameManagerScript : MonoBehaviour
                     _ComputerPlayerBoard.transform.localPosition = new Vector3(6, 0, 0);
                     _HumanPlayerBoard.gameObject.SetActive(true);
                     _ComputerPlayerBoard.gameObject.SetActive(true);
+                    _lowerCanvasGroup.DOFade(1, 0.5f);
                     break;
             }       
             

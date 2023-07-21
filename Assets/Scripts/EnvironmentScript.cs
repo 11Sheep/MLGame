@@ -113,11 +113,6 @@ public class EnvironmentScript : MonoBehaviour
     private Action<int, bool> _OnRewardCollected;
 
     /// <summary>
-    /// Callback to tell the parent that the agent hit a wall
-    /// </summary>
-    private Action _OnFailed;
-    
-    /// <summary>
     /// Agent location 
     /// </summary>
     private Vector3 _agentLocation;
@@ -223,7 +218,6 @@ public class EnvironmentScript : MonoBehaviour
         Debug.Log("End episode because hit wall");
         
         _agentScript.ShowAgent(false);
-        _OnFailed?.Invoke();
     }
 
     /// <summary>
@@ -332,10 +326,9 @@ public class EnvironmentScript : MonoBehaviour
         }
     }
 
-    public void SetCallbacks(Action<int, bool> onRewardCollected, Action OnFailed)
+    public void SetCallbacks(Action<int, bool> onRewardCollected)
     {
         _OnRewardCollected = onRewardCollected;
-        _OnFailed = OnFailed;
     }
 
     public int GetTotalPoints()
