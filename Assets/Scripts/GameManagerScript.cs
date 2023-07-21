@@ -9,6 +9,9 @@ using Random = UnityEngine.Random;
 
 public class GameManagerScript : MonoBehaviour
 {
+    private static Color AGENT_HUMAN_COLOR = new Color(0.49f, 0.38f, 0.68f);
+    private static Color AGENT_COMPUTER_COLOR = new Color(0.14f, 0.52f, 0.83f);
+    
     private const float STAGE_SIZE = 4;
     
     private enum GameStates
@@ -64,6 +67,9 @@ public class GameManagerScript : MonoBehaviour
     /// Count down for level completion
     /// </summary>
     private float _timerCounter = 0;
+
+    [SerializeField] private CircleProgressElement _HumanUIProgress;
+    [SerializeField] private CircleProgressElement _ComputerUIProgress;
     
     private void Awake()
     {
@@ -84,6 +90,9 @@ public class GameManagerScript : MonoBehaviour
         _roundText.color = GeneralUtils.MakeColorTransparent(_roundText.color);
         _timeText.color = GeneralUtils.MakeColorTransparent(_timeText.color);
         _separatorText.color = GeneralUtils.MakeColorTransparent(_separatorText.color);
+        
+        _HumanUIProgress.Initialize(AGENT_HUMAN_COLOR);
+        _ComputerUIProgress.Initialize(AGENT_COMPUTER_COLOR);
     }
 
     private void Update()
@@ -132,6 +141,8 @@ public class GameManagerScript : MonoBehaviour
                 
                 _HumanPlayerBoard.StartAnotherMatch();
                 _ComputerPlayerBoard.StartAnotherMatch();
+                
+                _HumanUIProgress.AddProgress();
             }
         }
         else if (_gameState == GameStates.TutorialStep2_WaitForRewardsCollection)
@@ -209,6 +220,8 @@ public class GameManagerScript : MonoBehaviour
                 
                 _HumanPlayerBoard.StartAnotherMatch();
                 _ComputerPlayerBoard.StartAnotherMatch();
+                
+                _ComputerUIProgress.AddProgress();
             }
         }
     }

@@ -57,6 +57,8 @@
      <Compile Include="Assets\Scripts\Utils\AnalyticUtils.cs" />
      <Compile Include="Assets\Scripts\Utils\UI\NumberPicker.cs" />
      <Compile Include="Assets\Scripts\Utils\Singleton\MonoBehaviourExtended.cs" />
+     <Compile Include="Assets\Scripts\CirclesProgress.cs" />
+     <Compile Include="Assets\Scripts\CircleProgressElement.cs" />
      <Reference Include="UnityEngine">
      <HintPath>C:\Program Files\2021.3.20f1\Editor\Data\PlaybackEngines\WindowsStandaloneSupport\Variations\mono\Managed\UnityEngine.dll</HintPath>
      </Reference>
