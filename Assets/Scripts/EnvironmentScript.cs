@@ -152,6 +152,7 @@ public class EnvironmentScript : MonoBehaviour
             _rewardCandies[candyIndex].gameObject.SetActive(false);
         }
         
+        _agentScript.SetReadyToMove(false);
         _agentScript.Initialize(_moveSpeed, _numOfCandies, _idleTimePenalty, _timeoutPenalty, _offStagePenalty, _rewardCandies, OnStartOfEpisode, OnAgentHitWall, OnAgentCollectedReward, OnFirstMove);
         _agentScript.ShowAgent(false);
         
@@ -193,6 +194,8 @@ public class EnvironmentScript : MonoBehaviour
             {
                 SetCandiesOnBoard();
                 SetCandiesReward();
+                
+                _agentScript.SetReadyToMove(true);
                 
                 // Keep the start time so we know to calculate the episode time
                 _episodeTimeStart = Time.time;
@@ -372,5 +375,19 @@ public class EnvironmentScript : MonoBehaviour
         }
 
         return totalPoints;
+    }
+
+    public void OtherPlayerWon()
+    {
+        _agentScript.ShowAgent(false);
+            
+        _agentScript.SetReadyToMove(false);
+    }
+
+    public void StartAnotherMatch()
+    {
+        Initialize();
+        
+        OnStartOfEpisode();
     }
 }

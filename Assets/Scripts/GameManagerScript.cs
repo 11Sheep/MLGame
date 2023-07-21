@@ -67,8 +67,9 @@ public class GameManagerScript : MonoBehaviour
         _helloText.color = GeneralUtils.MakeColorTransparent(_helloText.color);
         _keyboardHintImage.color = GeneralUtils.MakeColorTransparent(_keyboardHintImage.color);
         _HumanPlayerBoard.gameObject.SetActive(false);
-        _HumanPlayerBoard.SetCallbacks(OnHumanRewardCollected, OnHוmanFailed);
+        _HumanPlayerBoard.SetCallbacks(OnHumanRewardCollected, OnHumanFailed);
         _ComputerPlayerBoard.gameObject.SetActive(false);
+        _ComputerPlayerBoard.SetCallbacks(OnComputerRewardCollected, OnComputerFailed);
         
         _humanPointsText.color = GeneralUtils.MakeColorTransparent(_humanPointsText.color);
         _computerPointsText.color = GeneralUtils.MakeColorTransparent(_computerPointsText.color);
@@ -109,8 +110,15 @@ public class GameManagerScript : MonoBehaviour
         // Show the points
         _humanPointsText.text = "Human: " + _HumanPoints.ToString();
         _humanPointsText.DOFade(1, 0.5f);
-        
-        if (_gameState == GameStates.TutorialStep2_WaitForRewardsCollection)
+
+        if (_gameState == GameStates.CompetitionMode)
+        {
+            if (isEndOfRound)
+            {
+                _ComputerPlayerBoard.OtherPlayerWon();
+            }
+        }
+        else if (_gameState == GameStates.TutorialStep2_WaitForRewardsCollection)
         {
             if (isEndOfRound)
             {
@@ -149,8 +157,10 @@ public class GameManagerScript : MonoBehaviour
         }    
     }
 
-    private void OnHוmanFailed()
+    private void OnHumanFailed()
     {
+        // TODO: make that it is impossible to fall and fail (only by time)
+        
         if (_gameState == GameStates.TutorialStep5_WaitForRewardsCollection)
         {
             SetState(GameStates.TutorialStep6_WaitForRewardsCollection);
@@ -159,6 +169,31 @@ public class GameManagerScript : MonoBehaviour
         {
           
         }    
+    }
+
+    private void OnComputerRewardCollected(int obj, bool isEndOfRound)
+    {
+        int numOfPoints = (int) obj;
+
+        _ComputerPoints += numOfPoints;
+        // Show the points
+        _computerPointsText.text = "Computer: " + _ComputerPoints.ToString();
+        _computerPointsText.DOFade(1, 0.5f);
+        
+        if (_gameState == GameStates.CompetitionMode)
+        {
+            if (isEndOfRound)
+            {
+                _HumanPlayerBoard.OtherPlayerWon();
+
+                _HumanPlayerBoard.StartAnotherMatch();
+                _ComputerPlayerBoard.StartAnotherMatch();
+            }
+        }
+    }
+    
+    private void OnComputerFailed()
+    {
     }
 
     private void Start()

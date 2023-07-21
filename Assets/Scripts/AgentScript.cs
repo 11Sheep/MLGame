@@ -80,6 +80,13 @@ public class AgentScript : Agent
     /// Needed for the tutorial (to show the user the hint if not moving)
     /// </summary>
     private bool _firstMoveReported = false;
+
+    /// <summary>
+    /// We want a delay before the agent can move so we can show the agent and candies
+    /// </summary>
+    private bool _readyToMove = false;
+
+    private bool _pengingEpisodeStart = false;
     
     public void Initialize(float moveSpeed, int numberOfCandies, float idleTimePenalty, float timeoutPenalty, float offStagePenalty, RewardCandyScript[] rewardCandies, Action OnStartOfEpisode, Action OnAgentHitWall, Func<int, bool> OnAgentCollectedReward, Action OnPlayerFirstMove)
     {
@@ -95,11 +102,24 @@ public class AgentScript : Agent
         _OnPlayerFirstMove = OnPlayerFirstMove;
 
         _initialized = true;
+
+        if (_pengingEpisodeStart)
+        {
+            _pengingEpisodeStart = false;
+            _OnStartOfEpisode?.Invoke();
+        }
     }
     
     public override void OnEpisodeBegin()
     {
-        _OnStartOfEpisode?.Invoke();
+        if (!_initialized)
+        {
+            _pengingEpisodeStart = true;
+        }
+        else
+        {
+            _OnStartOfEpisode?.Invoke();
+        }
     }
 
     public override void CollectObservations(VectorSensor sensor)
@@ -144,29 +164,35 @@ public class AgentScript : Agent
     
     public override void OnActionReceived(ActionBuffers actions)
     {
-        float moveX = actions.ContinuousActions[0];
-        float moveZ = actions.ContinuousActions[1];
-        
-        transform.position += new Vector3(moveX, 0, moveZ) * Time.deltaTime * _moveSpeed;
-
-        if (_idleTimePenalty != 0)
+        if (_initialized && _readyToMove)
         {
-            AddReward(_idleTimePenalty);
+            float moveX = actions.ContinuousActions[0];
+            float moveZ = actions.ContinuousActions[1];
+
+            transform.position += new Vector3(moveX, 0, moveZ) * Time.deltaTime * _moveSpeed;
+
+            if (_idleTimePenalty != 0)
+            {
+                AddReward(_idleTimePenalty);
+            }
         }
     }
 
     public override void Heuristic(in ActionBuffers actionsOut)
     {
-        ActionSegment<float> continuesActions = actionsOut.ContinuousActions;
-        continuesActions[0] = Input.GetAxisRaw("Horizontal");
-        continuesActions[1] = Input.GetAxisRaw("Vertical");
-
-        // Report the first move of the player
-        if (((continuesActions[0] != 0) || (continuesActions[1] != 0)) && !_firstMoveReported)
+        if (_initialized && _readyToMove)
         {
-            _firstMoveReported = true;
-            
-            _OnPlayerFirstMove?.Invoke();
+            ActionSegment<float> continuesActions = actionsOut.ContinuousActions;
+            continuesActions[0] = Input.GetAxisRaw("Horizontal");
+            continuesActions[1] = Input.GetAxisRaw("Vertical");
+
+            // Report the first move of the player
+            if (((continuesActions[0] != 0) || (continuesActions[1] != 0)) && !_firstMoveReported)
+            {
+                _firstMoveReported = true;
+
+                _OnPlayerFirstMove?.Invoke();
+            }
         }
     }
 
@@ -177,8 +203,8 @@ public class AgentScript : Agent
             _OnAgentHitWall?.Invoke();
             
             SetReward(_offStagePenalty);
-            
-            EndEpisode();
+
+            RequestToEndEpisode();
         }
         else if (other.tag.Equals("candy"))
         {
@@ -194,7 +220,7 @@ public class AgentScript : Agent
 
                 if (needToEndEpisode)
                 {
-                    EndEpisode();
+                    RequestToEndEpisode();
                 }
             }
         }
@@ -206,8 +232,16 @@ public class AgentScript : Agent
     public void EpisodeTimeout()
     {
         SetReward(_timeoutPenalty);
+
+        RequestToEndEpisode();
+    }
+
+    private void RequestToEndEpisode()
+    {
+        _readyToMove = false;
         
-        EndEpisode();
+        // TODO: when in simulation we need to enable this
+        // EndEpisode();
     }
 
     public void ShowAgent(bool b)
@@ -218,5 +252,10 @@ public class AgentScript : Agent
         }
         
         GetComponent<MeshRenderer>().enabled = b;        
+    }
+
+    public void SetReadyToMove(bool isReady)
+    {
+        _readyToMove = isReady;
     }
 }

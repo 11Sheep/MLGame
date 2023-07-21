@@ -51,12 +51,12 @@
      <Compile Include="Assets\Scripts\Utils\URLParameters.cs" />
      <Compile Include="Assets\Scripts\Utils\FPSCounter.cs" />
      <Compile Include="Assets\Scripts\AgentScript.cs" />
+     <Compile Include="Assets\Scripts\AppConfiguration.cs" />
      <Compile Include="Assets\Scripts\RewardCandyScript.cs" />
      <Compile Include="Assets\Scripts\Utils\AudioManager.cs" />
      <Compile Include="Assets\Scripts\Utils\AnalyticUtils.cs" />
      <Compile Include="Assets\Scripts\Utils\UI\NumberPicker.cs" />
      <Compile Include="Assets\Scripts\Utils\Singleton\MonoBehaviourExtended.cs" />
-     <Compile Include="Assets\Scripts\AppConfiguration.cs" />
      <Folder Include="Assets" />
      <Folder Include="Assets\prefabs" />
      <None Include="Assets\TextMesh Pro\Shaders\TMPro.cginc" />
@@ -98,6 +98,7 @@
      <None Include="Assets\ML-Agents\Timers\MainScene_timers.json" />
      <None Include="Assets\ML-Agents\Examples\SharedAssets\Materials\ShaderOutline.shader" />
      <None Include="Assets\TextMesh Pro\Shaders\TMP_SDF Overlay.shader" />
+     <Folder Include="Assets\Images" />
      <Folder Include="Assets\ML-Agents\Examples\SharedAssets\Meshes" />
      <None Include="Assets\TextMesh Pro\Shaders\TMP_Bitmap-Mobile.shader" />
      <Folder Include="Assets\Scenes" />
