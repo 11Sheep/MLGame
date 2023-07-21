@@ -575,7 +575,7 @@ MonoBehaviour:
   _isAgentLocationRandom: 1
   floorMeshRenderer: {fileID: 4846370926650093647}
   _agentScript: {fileID: 8009311518947948237}
-  _moveSpeed: 3
+  _moveSpeed: 2
   _idleTimePenalty: 0
   _maxEpisodeTime: 70
   _timeoutPenalty: -2
@@ -810,6 +810,14 @@ PrefabInstance:
       propertyPath: m_Name
       value: AgentCube_Blue
       objectReference: {fileID: 0}
+    - target: {fileID: 5663930375558662907, guid: c730d1c8dc79d4f41affbae82d78a9ee, type: 3}
+      propertyPath: m_LocalScale.x
+      value: 0.55204
+      objectReference: {fileID: 0}
+    - target: {fileID: 5663930375558662907, guid: c730d1c8dc79d4f41affbae82d78a9ee, type: 3}
+      propertyPath: m_LocalScale.y
+      value: 0.08497998
+      objectReference: {fileID: 0}
     - target: {fileID: 5676514473871267805, guid: c730d1c8dc79d4f41affbae82d78a9ee, type: 3}
       propertyPath: m_Enabled
       value: 1
@@ -916,6 +924,9 @@ MonoBehaviour:
   - {fileID: 7588247267537108019}
   - {fileID: 7587451043099993263}
   - {fileID: 7588489788615339753}
+  _eyes:
+  - {fileID: 7587516618127084733}
+  - {fileID: 7588247267537108019}
 --- !u!1 &7587451043099993263 stripped
 GameObject:
   m_CorrespondingSourceObject: {fileID: 5661422319741107839, guid: c730d1c8dc79d4f41affbae82d78a9ee, type: 3}

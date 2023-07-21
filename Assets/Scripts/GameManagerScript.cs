@@ -9,6 +9,7 @@ using Random = UnityEngine.Random;
 
 public class GameManagerScript : MonoBehaviour
 {
+    private const float MIN_DISTANCE_FROM_ELEMENTS = 2f;
     private const int NUMBER_OF_COMPETITION_ROUNDS = 10;
     private static Color AGENT_HUMAN_COLOR = new Color(0.49f, 0.38f, 0.68f);
     private static Color AGENT_COMPUTER_COLOR = new Color(0.14f, 0.52f, 0.83f);
@@ -458,14 +459,14 @@ public class GameManagerScript : MonoBehaviour
                 randomPosition = new Vector3(Random.Range(-STAGE_SIZE, STAGE_SIZE), 0, Random.Range(-STAGE_SIZE, STAGE_SIZE));
                 
                 // Check if the position is too close to the agent
-                tooCloseToAgent = Vector3.Distance(randomPosition, agentLocation) < 1.5f;
+                tooCloseToAgent = Vector3.Distance(randomPosition, agentLocation) < MIN_DISTANCE_FROM_ELEMENTS;
                 
                 // Check if the position is too close to another candy
                 tooCloseToAnotherCandy = false;
                 
                 for (int otherCandyIndex = 0; otherCandyIndex < candyIndex; otherCandyIndex++)
                 {
-                    if (Vector3.Distance(randomPosition, candiesLocations[otherCandyIndex]) < 1.5f)
+                    if (Vector3.Distance(randomPosition, candiesLocations[otherCandyIndex]) < MIN_DISTANCE_FROM_ELEMENTS)
                     {
                         tooCloseToAnotherCandy = true;
                         break;

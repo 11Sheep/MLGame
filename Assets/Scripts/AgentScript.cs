@@ -87,6 +87,10 @@ public class AgentScript : Agent
     private bool _readyToMove = false;
 
     private bool _pengingEpisodeStart = false;
+
+    [SerializeField] private GameObject[] _eyes;
+
+    private bool _agentIsShown = false;
     
     public void Initialize(float moveSpeed, int numberOfCandies, float idleTimePenalty, float timeoutPenalty, float offStagePenalty, RewardCandyScript[] rewardCandies, Action OnStartOfEpisode, Action OnAgentHitWall, Func<int, bool> OnAgentCollectedReward, Action OnPlayerFirstMove)
     {
@@ -108,8 +112,29 @@ public class AgentScript : Agent
             _pengingEpisodeStart = false;
             _OnStartOfEpisode?.Invoke();
         }
+        
+        StartCoroutine(BlinkingEyes());
     }
-    
+
+    private IEnumerator BlinkingEyes()
+    {
+        while (true)
+        {
+            yield return new WaitForSeconds(Random.Range(2f, 3f));
+            
+            _eyes[0].SetActive(false);
+            _eyes[1].SetActive(false);
+            
+            yield return new WaitForSeconds(Random.Range(0.1f, 0.2f));
+
+            if (_agentIsShown)
+            {
+                _eyes[0].SetActive(true);
+                _eyes[1].SetActive(true);
+            }
+        }
+    }
+
     public override void OnEpisodeBegin()
     {
         if (!_initialized)
@@ -246,12 +271,16 @@ public class AgentScript : Agent
 
     public void ShowAgent(bool b)
     {
+        _agentIsShown = b;
         for (int i = 0; i < _agentVisualElements.Length; i++)
         {
             _agentVisualElements[i].SetActive(b);
         }
         
         GetComponent<MeshRenderer>().enabled = b;        
+        
+        _eyes[0].SetActive(b);
+        _eyes[1].SetActive(b);
     }
 
     public void SetReadyToMove(bool isReady)
