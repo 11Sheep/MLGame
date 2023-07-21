@@ -8,7 +8,6 @@ using Random = UnityEngine.Random;
 
 public class EnvironmentScript : MonoBehaviour
 {
-    private const float STAGE_SIZE = 4;
     private static Color FLOOR_IDLE_COLOR = new Color(0.6f, 0.6f, 0.6f);
     private static Color FLOOR_HIT_WALL_COLOR = new Color(1f, 0.3f, 0.3f);
     private static Color FLOOR_CANDY_COLLECTED_COLOR = new Color(.6f, .9f, 0.6f);
@@ -118,6 +117,17 @@ public class EnvironmentScript : MonoBehaviour
     /// </summary>
     private Action _OnFailed;
     
+    /// <summary>
+    /// Agent location 
+    /// </summary>
+    private Vector3 _agentLocation;
+
+    /// <summary>
+    /// Candies locations
+    /// </summary>
+    /// <returns></returns>
+    private Vector3[] _candiesLocation;
+    
     private void Start()
     {
         // Scale the stage
@@ -188,11 +198,11 @@ public class EnvironmentScript : MonoBehaviour
         {
             // Show agent
             _agentScript.ShowAgent(true);
-            SetAgentOnBoard();
+            SetAgentOnBoard(_agentLocation);
             
             StartCoroutine(GeneralUtils.WaitAndPerform(1, () =>
             {
-                SetCandiesOnBoard();
+                SetCandiesOnBoard(_candiesLocation);
                 SetCandiesReward();
                 
                 _agentScript.SetReadyToMove(true);
@@ -254,53 +264,19 @@ public class EnvironmentScript : MonoBehaviour
         }
     }
 
-    private void SetAgentOnBoard()
+    private void SetAgentOnBoard(Vector3 agentLocation)
     {
-        if (_isAgentLocationRandom)
-        {
-            // Put in random location
-            _agentT.localPosition = new Vector3(Random.Range(-STAGE_SIZE, STAGE_SIZE), 0, Random.Range(-STAGE_SIZE, STAGE_SIZE));
-        }
-        else
-        {
-            // Put in the middle
-            _agentT.localPosition = Vector3.zero;
-        }
+        _agentT.localPosition = agentLocation;
     }
 
-    private void SetCandiesOnBoard()
+    private void SetCandiesOnBoard(Vector3[] candiesLocation)
     {
-        bool tooCloseToAgent;
-        bool tooCloseToAnotherCandy;
-        Vector3 randomPosition;
-
         // Set all the candies on the board and make sure that they are not too close to the agent or to another candy
         for (int candyIndex = 0; candyIndex < _rewardCandies.Length; candyIndex++)
         {
-            do
-            {
-                // Decide on a random position
-                randomPosition = new Vector3(Random.Range(-STAGE_SIZE, STAGE_SIZE), 0, Random.Range(-STAGE_SIZE, STAGE_SIZE));
-                
-                // Check if the position is too close to the agent
-                tooCloseToAgent = Vector3.Distance(randomPosition, _agentT.localPosition) < 1.5f;
-                
-                // Check if the position is too close to another candy
-                tooCloseToAnotherCandy = false;
-                
-                for (int otherCandyIndex = 0; otherCandyIndex < candyIndex; otherCandyIndex++)
-                {
-                    if (Vector3.Distance(randomPosition, _rewardCandies[otherCandyIndex].transform.localPosition) < 1.5f)
-                    {
-                        tooCloseToAnotherCandy = true;
-                        break;
-                    }
-                }
-            } while (tooCloseToAnotherCandy || tooCloseToAgent);
-
             // Put in random position
             _rewardCandies[candyIndex].gameObject.SetActive(false);
-            _rewardCandies[candyIndex].transform.localPosition = randomPosition;
+            _rewardCandies[candyIndex].transform.localPosition = candiesLocation[candyIndex];
         }
     }
 
@@ -389,5 +365,11 @@ public class EnvironmentScript : MonoBehaviour
         Initialize();
         
         OnStartOfEpisode();
+    }
+
+    public void SetLocations(Vector3 agentLocation, Vector3[] candiesLocation)
+    {
+        _agentLocation = agentLocation;
+        _candiesLocation = candiesLocation;
     }
 }

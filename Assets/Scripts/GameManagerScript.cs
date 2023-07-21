@@ -5,9 +5,12 @@ using DG.Tweening;
 using UnityEngine;
 using UnityEngine.UI;
 using Utils;
+using Random = UnityEngine.Random;
 
 public class GameManagerScript : MonoBehaviour
 {
+    private const float STAGE_SIZE = 4;
+    
     private enum GameStates
     {
         None,                          // 
@@ -71,6 +74,11 @@ public class GameManagerScript : MonoBehaviour
         _ComputerPlayerBoard.gameObject.SetActive(false);
         _ComputerPlayerBoard.SetCallbacks(OnComputerRewardCollected, OnComputerFailed);
         
+        (Vector3 agentLocation, Vector3[] rewardLocations) = GetLocationsForAgentAndCandies(4, false);
+                
+        _HumanPlayerBoard.SetLocations(agentLocation, rewardLocations);
+        _ComputerPlayerBoard.SetLocations(agentLocation, rewardLocations);
+        
         _humanPointsText.color = GeneralUtils.MakeColorTransparent(_humanPointsText.color);
         _computerPointsText.color = GeneralUtils.MakeColorTransparent(_computerPointsText.color);
         _roundText.color = GeneralUtils.MakeColorTransparent(_roundText.color);
@@ -116,6 +124,14 @@ public class GameManagerScript : MonoBehaviour
             if (isEndOfRound)
             {
                 _ComputerPlayerBoard.OtherPlayerWon();
+
+                (Vector3 agentLocation, Vector3[] rewardLocations) = GetLocationsForAgentAndCandies(4, false);
+                
+                _HumanPlayerBoard.SetLocations(agentLocation, rewardLocations);
+                _ComputerPlayerBoard.SetLocations(agentLocation, rewardLocations);
+                
+                _HumanPlayerBoard.StartAnotherMatch();
+                _ComputerPlayerBoard.StartAnotherMatch();
             }
         }
         else if (_gameState == GameStates.TutorialStep2_WaitForRewardsCollection)
@@ -186,6 +202,11 @@ public class GameManagerScript : MonoBehaviour
             {
                 _HumanPlayerBoard.OtherPlayerWon();
 
+                (Vector3 agentLocation, Vector3[] rewardLocations) = GetLocationsForAgentAndCandies(4, false);
+                
+                _HumanPlayerBoard.SetLocations(agentLocation, rewardLocations);
+                _ComputerPlayerBoard.SetLocations(agentLocation, rewardLocations);
+                
                 _HumanPlayerBoard.StartAnotherMatch();
                 _ComputerPlayerBoard.StartAnotherMatch();
             }
@@ -304,6 +325,56 @@ public class GameManagerScript : MonoBehaviour
             
             _gameState = newState;
         }
+    }
+    
+    private (Vector3,Vector3[]) GetLocationsForAgentAndCandies(int numOfCandies, bool isAgentLocationRandom)
+    {
+        Vector3 agentLocation = new Vector3(Random.Range(-STAGE_SIZE, STAGE_SIZE), 0, Random.Range(-STAGE_SIZE, STAGE_SIZE));
+        Vector3[] candiesLocations = new Vector3[numOfCandies];
+        
+        if (isAgentLocationRandom)
+        {
+            // Put in random location
+            agentLocation = new Vector3(Random.Range(-STAGE_SIZE, STAGE_SIZE), 0, Random.Range(-STAGE_SIZE, STAGE_SIZE));
+        }
+        else
+        {
+            // Put in the middle
+            agentLocation = Vector3.zero;
+        }
+        
+        bool tooCloseToAgent;
+        bool tooCloseToAnotherCandy;
+        Vector3 randomPosition;
+
+        // Set all the candies on the board and make sure that they are not too close to the agent or to another candy
+        for (int candyIndex = 0; candyIndex < candiesLocations.Length; candyIndex++)
+        {
+            do
+            {
+                // Decide on a random position
+                randomPosition = new Vector3(Random.Range(-STAGE_SIZE, STAGE_SIZE), 0, Random.Range(-STAGE_SIZE, STAGE_SIZE));
+                
+                // Check if the position is too close to the agent
+                tooCloseToAgent = Vector3.Distance(randomPosition, agentLocation) < 1.5f;
+                
+                // Check if the position is too close to another candy
+                tooCloseToAnotherCandy = false;
+                
+                for (int otherCandyIndex = 0; otherCandyIndex < candyIndex; otherCandyIndex++)
+                {
+                    if (Vector3.Distance(randomPosition, candiesLocations[otherCandyIndex]) < 1.5f)
+                    {
+                        tooCloseToAnotherCandy = true;
+                        break;
+                    }
+                }
+            } while (tooCloseToAnotherCandy || tooCloseToAgent);
+            
+            candiesLocations[candyIndex] = randomPosition;
+        }
+        
+        return (agentLocation, candiesLocations);
     }
 
     #region UI
