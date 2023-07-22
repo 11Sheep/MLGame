@@ -22,4 +22,12 @@ public class CircleProgressElement : MonoBehaviour
       
       numOfWins++; 
    }
+
+   public void Reset()
+   {
+      for (int circleIndex = 0; circleIndex < _circleElements.Length; circleIndex++)
+      {
+         _circleElements[circleIndex].Reset();
+      }
+   }
 }

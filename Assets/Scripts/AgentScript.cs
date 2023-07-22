@@ -269,22 +269,29 @@ public class AgentScript : Agent
         // EndEpisode();
     }
 
-    public void ShowAgent(bool b)
+    public void ShowAgent(bool bShow, bool showWinAnimation = false)
     {
-        _agentIsShown = b;
+        _agentIsShown = bShow;
         for (int i = 0; i < _agentVisualElements.Length; i++)
         {
-            _agentVisualElements[i].SetActive(b);
+            _agentVisualElements[i].SetActive(bShow);
         }
         
-        GetComponent<MeshRenderer>().enabled = b;        
+        GetComponent<MeshRenderer>().enabled = bShow;        
         
-        _eyes[0].SetActive(b);
-        _eyes[1].SetActive(b);
+        _eyes[0].SetActive(bShow);
+        _eyes[1].SetActive(bShow);
     }
 
     public void SetReadyToMove(bool isReady)
     {
         _readyToMove = isReady;
+    }
+
+    public void WonAnimation()
+    {
+        transform.localPosition += Vector3.up;
+        
+        AudioManager.Instance.PlayGeneralSound(AudioManager.Sound__agentWon);
     }
 }

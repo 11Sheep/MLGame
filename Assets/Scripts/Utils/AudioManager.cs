@@ -16,6 +16,7 @@ public class AudioManager : Singleton<AudioManager>
     public static string Sound__showCandy = "ShowCandy";
     public static string Sound__showPlayer = "ShowPlayer";
     public static string Sound__collectCandy ="CollectDandy";
+    public static string Sound__agentWon ="AgentWon";
  
     public void Initialize()
     {
@@ -47,7 +48,7 @@ public class AudioManager : Singleton<AudioManager>
             soundsAudioGenerealSource.Play();
 
 #if UNITY_EDITOR
-            Debug.Log("Playing sound: " + sound + ", loop: " + loop);
+            // Debug.Log("Playing sound: " + sound + ", loop: " + loop);
 #endif
         }
     }

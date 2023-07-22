@@ -21,4 +21,9 @@ public class CirclesProgress : MonoBehaviour
       _innerCircle.DOFade(1, 0.5f);
       _innerCircle.transform.DOScale(1, 0.3f).SetEase(Ease.OutBack);
    }
+
+   public void Reset()
+   {
+      _innerCircle.DOFade(0, 0.5f);
+   }
 }

@@ -244,7 +244,7 @@ public class EnvironmentScript : MonoBehaviour
         {
             Debug.Log("End episode because all rewards were collected");
 
-            _agentScript.ShowAgent(false);
+            //_agentScript.ShowAgent(false);
             
             needToEndEpisode = true;
         }
@@ -362,7 +362,14 @@ public class EnvironmentScript : MonoBehaviour
 
     public void OtherPlayerWon()
     {
-        _agentScript.ShowAgent(false);
+        //_agentScript.ShowAgent(false);
+            
+        _agentScript.SetReadyToMove(false);
+    }
+    
+    public void YouWon()
+    {
+        _agentScript.WonAnimation();
             
         _agentScript.SetReadyToMove(false);
     }
