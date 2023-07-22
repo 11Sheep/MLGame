@@ -100,6 +100,8 @@ public class GameManagerScript : MonoBehaviour
     [SerializeField] private GameObject _computerCompetitionResultImage;
 
     [SerializeField] private TMPro.TextMeshProUGUI _timerText;
+
+    [SerializeField] private RectTransform _upperHUDRT;
     
     private int _currentRound = 0;
 
@@ -157,14 +159,14 @@ public class GameManagerScript : MonoBehaviour
         _competitionPopupCanvasGroup.gameObject.SetActive(false);
 
         _competitionResultPopupCanvasGroup.gameObject.SetActive(false);
+
+        _upperHUDRT.anchoredPosition = new Vector2(0, 100);
     }
     
     private void Start()
     {
-        // TODO:
         SetState(GameStates.Hello);
-        //SetState(GameStates.CompetitionPopup);
-        
+
         // Add listeners
         EventManagerScript.Instance.StartListening(EventManagerScript.EVENT__PLAYER_FIRST_MOVE, (object obj) =>
         {
@@ -203,6 +205,9 @@ public class GameManagerScript : MonoBehaviour
                 }
                 else if (_gameState == GameStates.TutorialStep6_WaitForRewardsCollection)
                 {
+                    _skipTutorialButton.interactable = false;
+                    _skipTutorialButton.GetComponent<CanvasGroup>().DOFade(0, 0.5f);
+                    
                     SetState(GameStates.CompetitionPopup);
                 }
                 else if (_gameState == GameStates.CompetitionMode)
@@ -360,6 +365,11 @@ public class GameManagerScript : MonoBehaviour
             if (isEndOfRound)
             {
                 _timerCounter = 0;
+                
+                _skipTutorialButton.interactable = false;
+                _skipTutorialButton.GetComponent<CanvasGroup>().DOFade(0, 0.5f);
+                        
+                SetState(GameStates.CompetitionPopup);
             }
         }    
         
@@ -426,8 +436,10 @@ public class GameManagerScript : MonoBehaviour
                     break;
                 
                 case GameStates.TutorialStep1_ShowPlayerEnv:
+
+                    _upperHUDRT.DOAnchorPosY(0, 0.5f).SetEase(Ease.OutCirc);
                     
-                    _skipTutorialButton.GetComponent<CanvasGroup>().DOFade(1, 0.5f);
+                    _skipTutorialButton.GetComponent<CanvasGroup>().DOFade(1, 0.5f).SetDelay(2);
                     
                     _HumanPlayerBoard.SetTutorialStep(1);
                     
@@ -469,6 +481,12 @@ public class GameManagerScript : MonoBehaviour
                     _HumanPlayerBoard.SetLocations(agentLocation, rewardLocations);
                     
                     _HumanPlayerBoard.SetTutorialStep(2);
+                    
+                    StartCoroutine(GeneralUtils.WaitAndPerform(2, () =>
+                    {
+                        _HumanRoundPoints = 0;
+                        _humanPointsText.text = "Human: " + _HumanRoundPoints.ToString();
+                    }));
                     break;
                 
                 case GameStates.TutorialStep4_WaitForRewardsCollection:
@@ -477,6 +495,13 @@ public class GameManagerScript : MonoBehaviour
                     _HumanPlayerBoard.SetLocations(agentLocation, rewardLocations);
                     
                     _HumanPlayerBoard.SetTutorialStep(3);
+                    
+                    StartCoroutine(GeneralUtils.WaitAndPerform(2, () =>
+                    {
+                        _HumanRoundPoints = 0;
+                        _humanPointsText.text = "Human: " + _HumanRoundPoints.ToString();
+                    }));
+                    
                     break;
                 
                 case GameStates.TutorialStep5_WaitForRewardsCollection:
@@ -488,6 +513,9 @@ public class GameManagerScript : MonoBehaviour
                     
                     StartCoroutine(GeneralUtils.WaitAndPerform(2, () =>
                     {
+                        _HumanRoundPoints = 0;
+                        _humanPointsText.text = "Human: " + _HumanRoundPoints.ToString();
+                        
                         _roundTime = 10f;
                         _timerCounter = 10f;
                     }));
@@ -502,6 +530,9 @@ public class GameManagerScript : MonoBehaviour
                     
                     StartCoroutine(GeneralUtils.WaitAndPerform(2, () =>
                     {
+                        _HumanRoundPoints = 0;
+                        _humanPointsText.text = "Human: " + _HumanRoundPoints.ToString();
+                        
                         _roundTime = 5f;
                         _timerCounter = 5f;
                     }));
@@ -509,6 +540,7 @@ public class GameManagerScript : MonoBehaviour
                     break;
                 
                 case GameStates.CompetitionPopup:
+
                     _competitionPopupCanvasGroup.alpha = 0;
                     _competitionPopupCanvasGroup.gameObject.SetActive(true);
                     _competitionPopupCanvasGroup.DOFade(1, 0.3f);
@@ -606,17 +638,25 @@ public class GameManagerScript : MonoBehaviour
         return (agentLocation, candiesLocations);
     }
 
-    public float GetRoundTime(int roundIndex)
+    private float GetRoundTime(int roundIndex)
     {
         float roundTime = 0;
         
-        if (roundIndex > 10)
+        if (roundIndex < 5)
+        {
+            roundTime = 6;
+        }
+        else if (roundIndex < 10)
+        {
+            roundTime = 5;
+        }
+        if (roundIndex < 15)
         {
             roundTime = 4;
         }
         else
         {
-            roundTime = (10 - roundIndex) + 2;
+            roundTime = 3;
         }
         
         return roundTime;
@@ -626,6 +666,8 @@ public class GameManagerScript : MonoBehaviour
 
     public void OnUISkipTutorial()
     {
+        _timerCounter = 0;
+
         SetState(GameStates.CompetitionPopup);
     }
 

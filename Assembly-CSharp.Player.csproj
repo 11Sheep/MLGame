@@ -42,30 +42,30 @@
   </PropertyGroup>
   <ItemGroup>
      <Compile Include="Assets\Scripts\Utils\EventManagerScript.cs" />
+     <Compile Include="Assets\WebGLSupport\WebGLInput\WebGLInput.cs" />
+     <Compile Include="Assets\WebGLSupport\WebGLInput\Wrapper\WrappedInputField.cs" />
      <Compile Include="Assets\Scripts\Utils\Singleton\Singleton.cs" />
+     <Compile Include="Assets\Scripts\CircleProgressElement.cs" />
      <Compile Include="Assets\Scripts\GeneralUtils.cs" />
      <Compile Include="Assets\Scripts\Utils\JsonHelper.cs" />
+     <Compile Include="Assets\Scripts\CirclesProgress.cs" />
+     <Compile Include="Assets\WebGLSupport\WebGLInput\Wrapper\WrappedTMPInputField.cs" />
      <Compile Include="Assets\Scripts\Utils\UI\NumberPickerElement.cs" />
      <Compile Include="Assets\Scripts\EnvironmentScript.cs" />
+     <Compile Include="Assets\WebGLSupport\WebGLWindow\WebGLWindow.cs" />
      <Compile Include="Assets\Scripts\GameManagerScript.cs" />
      <Compile Include="Assets\Scripts\Utils\URLParameters.cs" />
      <Compile Include="Assets\Scripts\Utils\FPSCounter.cs" />
+     <Compile Include="Assets\WebGLSupport\WebGLInput\Wrapper\IInputField.cs" />
      <Compile Include="Assets\Scripts\AgentScript.cs" />
      <Compile Include="Assets\Scripts\AppConfiguration.cs" />
      <Compile Include="Assets\Scripts\RewardCandyScript.cs" />
      <Compile Include="Assets\Scripts\Utils\AudioManager.cs" />
+     <Compile Include="Assets\WebGLSupport\WebGLInput\Mobile\WebGLInputMobile.cs" />
      <Compile Include="Assets\Scripts\Utils\AnalyticUtils.cs" />
      <Compile Include="Assets\Scripts\Utils\UI\NumberPicker.cs" />
      <Compile Include="Assets\Scripts\Utils\Singleton\MonoBehaviourExtended.cs" />
-     <Compile Include="Assets\Scripts\CirclesProgress.cs" />
-     <Compile Include="Assets\Scripts\CircleProgressElement.cs" />
-     <Compile Include="Assets\WebGLSupport\WebGLInput\WebGLInput.cs" />
      <Compile Include="Assets\WebGLSupport\WebGLInput\Detail\RebuildChecker.cs" />
-     <Compile Include="Assets\WebGLSupport\WebGLInput\Wrapper\IInputField.cs" />
-     <Compile Include="Assets\WebGLSupport\WebGLInput\Mobile\WebGLInputMobile.cs" />
-     <Compile Include="Assets\WebGLSupport\WebGLInput\Wrapper\WrappedTMPInputField.cs" />
-     <Compile Include="Assets\WebGLSupport\WebGLInput\Wrapper\WrappedInputField.cs" />
-     <Compile Include="Assets\WebGLSupport\WebGLWindow\WebGLWindow.cs" />
      <Reference Include="UnityEngine">
      <HintPath>C:\Program Files\2021.3.20f1\Editor\Data\PlaybackEngines\WebGLSupport\Managed\UnityEngine.dll</HintPath>
      </Reference>

@@ -1400,6 +1400,7 @@ MonoBehaviour:
   _humanCompetitionResultImage: {fileID: 1983228467}
   _computerCompetitionResultImage: {fileID: 1475241679}
   _timerText: {fileID: 650684324}
+  _upperHUDRT: {fileID: 1617236257}
   _HumanUIProgress: {fileID: 1472411439}
   _ComputerUIProgress: {fileID: 2025976631}
   _timerSlider: {fileID: 339112678}
