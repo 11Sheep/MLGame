@@ -201,6 +201,10 @@ public class GameManagerScript : MonoBehaviour
                 {
                     SetState(GameStates.TutorialStep6_WaitForRewardsCollection);
                 }
+                else if (_gameState == GameStates.TutorialStep6_WaitForRewardsCollection)
+                {
+                    SetState(GameStates.CompetitionPopup);
+                }
                 else if (_gameState == GameStates.CompetitionMode)
                 {
                     // See who is the winner
@@ -394,6 +398,9 @@ public class GameManagerScript : MonoBehaviour
 
     private void SetState(GameStates newState)
     {
+        Vector3 agentLocation;
+        Vector3[] rewardLocations;
+        
         if (newState != _gameState)
         {
             GameStates nextState = GameStates.None;
@@ -423,6 +430,11 @@ public class GameManagerScript : MonoBehaviour
                     _skipTutorialButton.GetComponent<CanvasGroup>().DOFade(1, 0.5f);
                     
                     _HumanPlayerBoard.SetTutorialStep(1);
+                    
+                    // Random locations for candies
+                    (agentLocation, rewardLocations) = GetLocationsForAgentAndCandies(4, false);
+                    _HumanPlayerBoard.SetLocations(agentLocation, rewardLocations);
+                    
                     _HumanPlayerBoard.gameObject.SetActive(true);
                     _HumanPlayerBoard.transform.localPosition = new Vector3(0, 0, 0);
 
@@ -452,14 +464,26 @@ public class GameManagerScript : MonoBehaviour
                     break;
                 
                 case GameStates.TutorialStep3_WaitForRewardsCollection:
+                    // Random locations for candies
+                    (agentLocation, rewardLocations) = GetLocationsForAgentAndCandies(4, false);
+                    _HumanPlayerBoard.SetLocations(agentLocation, rewardLocations);
+                    
                     _HumanPlayerBoard.SetTutorialStep(2);
                     break;
                 
                 case GameStates.TutorialStep4_WaitForRewardsCollection:
+                    // Random locations for candies
+                    (agentLocation, rewardLocations) = GetLocationsForAgentAndCandies(4, false);
+                    _HumanPlayerBoard.SetLocations(agentLocation, rewardLocations);
+                    
                     _HumanPlayerBoard.SetTutorialStep(3);
                     break;
                 
                 case GameStates.TutorialStep5_WaitForRewardsCollection:
+                    // Random locations for candies
+                    (agentLocation, rewardLocations) = GetLocationsForAgentAndCandies(4, false);
+                    _HumanPlayerBoard.SetLocations(agentLocation, rewardLocations);
+                    
                     _HumanPlayerBoard.SetTutorialStep(4);
                     
                     StartCoroutine(GeneralUtils.WaitAndPerform(2, () =>
@@ -470,6 +494,10 @@ public class GameManagerScript : MonoBehaviour
                     break;
                 
                 case GameStates.TutorialStep6_WaitForRewardsCollection:
+                    // Random locations for candies
+                    (agentLocation, rewardLocations) = GetLocationsForAgentAndCandies(4, false);
+                    _HumanPlayerBoard.SetLocations(agentLocation, rewardLocations);
+                    
                     _HumanPlayerBoard.SetTutorialStep(5);
                     
                     StartCoroutine(GeneralUtils.WaitAndPerform(2, () =>
