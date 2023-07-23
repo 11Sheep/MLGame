@@ -26,7 +26,8 @@ public class GameManagerScript : MonoBehaviour
     
     private enum GameStates
     {
-        None,                          // 
+        None,                          //
+        EnterFullScreen,
         Hello,                         // Say hello to the player
         TutorialStep1_ShowPlayerEnv,   // Show the character
         TutorialStep2_WaitForRewardsCollection,
@@ -102,6 +103,8 @@ public class GameManagerScript : MonoBehaviour
     [SerializeField] private TMPro.TextMeshProUGUI _timerText;
 
     [SerializeField] private RectTransform _upperHUDRT;
+
+    [SerializeField] private GameObject _fullScreenReq;
     
     private int _currentRound = 0;
 
@@ -168,7 +171,7 @@ public class GameManagerScript : MonoBehaviour
     
     private void Start()
     {
-        SetState(GameStates.Hello);
+        SetState(GameStates.EnterFullScreen);
 
         // Add listeners
         EventManagerScript.Instance.StartListening(EventManagerScript.EVENT__PLAYER_FIRST_MOVE, (object obj) =>
@@ -240,6 +243,8 @@ public class GameManagerScript : MonoBehaviour
 
         Debug.Log("CompetitionRoundFinished. winner: " + whoWon + ", reason: " + winReason);
 
+        AnalyticUtils.Instance.SendMatchFinishedEvent(whoWon.ToString(), winReason.ToString(), _currentRound, _humanWins, _computerWins, _HumanRoundPoints, _ComputerRoundPoints);
+        
         // Show the timer only if we have time usage in this round
         _timerSlider.gameObject.SetActive(timeForRound > 0);
 
@@ -422,6 +427,10 @@ public class GameManagerScript : MonoBehaviour
          
             switch (newState)
             {
+                case GameStates.EnterFullScreen:
+                    
+                    break;
+                
                 case GameStates.Hello:
 
                     StartCoroutine(GeneralUtils.WaitAndPerform(0.8f, () =>
@@ -584,6 +593,9 @@ public class GameManagerScript : MonoBehaviour
                         _humanCompetitionResultImage.SetActive(true);
                         _competitionResultText.text = "Human";
                     }
+                    
+                    AnalyticUtils.Instance.SendCompetitionFinishedEvent((_computerWins == NUMBER_OF_COMPETITION_ROUNDS) ? "Computer" : "Human");
+                    
                     break;
             }       
             
@@ -706,6 +718,14 @@ public class GameManagerScript : MonoBehaviour
            
             SetState(GameStates.CompetitionPopup);
         });
+    }
+
+    public void OnUIEnterFullscreen()
+    {
+        Screen.fullScreen = true;
+        _fullScreenReq.SetActive(false);
+        
+        SetState(GameStates.Hello);
     }
 
     #endregion

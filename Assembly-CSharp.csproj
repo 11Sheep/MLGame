@@ -42,30 +42,23 @@
   </PropertyGroup>
   <ItemGroup>
      <Compile Include="Assets\Scripts\Utils\EventManagerScript.cs" />
-     <Compile Include="Assets\WebGLSupport\WebGLInput\WebGLInput.cs" />
-     <Compile Include="Assets\WebGLSupport\WebGLInput\Wrapper\WrappedInputField.cs" />
      <Compile Include="Assets\Scripts\Utils\Singleton\Singleton.cs" />
      <Compile Include="Assets\Scripts\CircleProgressElement.cs" />
      <Compile Include="Assets\Scripts\GeneralUtils.cs" />
      <Compile Include="Assets\Scripts\Utils\JsonHelper.cs" />
      <Compile Include="Assets\Scripts\CirclesProgress.cs" />
-     <Compile Include="Assets\WebGLSupport\WebGLInput\Wrapper\WrappedTMPInputField.cs" />
      <Compile Include="Assets\Scripts\Utils\UI\NumberPickerElement.cs" />
      <Compile Include="Assets\Scripts\EnvironmentScript.cs" />
-     <Compile Include="Assets\WebGLSupport\WebGLWindow\WebGLWindow.cs" />
      <Compile Include="Assets\Scripts\GameManagerScript.cs" />
      <Compile Include="Assets\Scripts\Utils\URLParameters.cs" />
      <Compile Include="Assets\Scripts\Utils\FPSCounter.cs" />
-     <Compile Include="Assets\WebGLSupport\WebGLInput\Wrapper\IInputField.cs" />
      <Compile Include="Assets\Scripts\AgentScript.cs" />
      <Compile Include="Assets\Scripts\AppConfiguration.cs" />
      <Compile Include="Assets\Scripts\RewardCandyScript.cs" />
      <Compile Include="Assets\Scripts\Utils\AudioManager.cs" />
-     <Compile Include="Assets\WebGLSupport\WebGLInput\Mobile\WebGLInputMobile.cs" />
      <Compile Include="Assets\Scripts\Utils\AnalyticUtils.cs" />
      <Compile Include="Assets\Scripts\Utils\UI\NumberPicker.cs" />
      <Compile Include="Assets\Scripts\Utils\Singleton\MonoBehaviourExtended.cs" />
-     <Compile Include="Assets\WebGLSupport\WebGLInput\Detail\RebuildChecker.cs" />
      <Folder Include="Assets" />
      <Folder Include="Assets\prefabs" />
      <None Include="Assets\TextMesh Pro\Shaders\TMPro.cginc" />
@@ -77,7 +70,6 @@
      <None Include="Assets\TextMesh Pro\Shaders\TMP_Bitmap.shader" />
      <Folder Include="Assets\Scripts" />
      <Folder Include="Assets\Audio\Resources" />
-     <Folder Include="Assets\WebGLSupport\WebGLInput" />
      <Folder Include="Assets\TextMesh Pro\Resources\Fonts &amp; Materials" />
      <None Include="Assets\TextMesh Pro\Shaders\TMPro_Mobile.cginc" />
      <None Include="Assets\TextMesh Pro\Shaders\TMP_SDF SSD.shader" />
@@ -90,9 +82,9 @@
      <Folder Include="Assets\ML-Agents\Examples" />
      <Folder Include="Assets\TextMesh Pro" />
      <Folder Include="Assets\Audio\Resources\General" />
-     <Folder Include="Assets\WebGLSupport" />
      <Folder Include="Assets\Audio" />
      <None Include="Assets\TextMesh Pro\Shaders\TMP_SDF-Surface.shader" />
+     <Folder Include="Assets\WebGLTemplates" />
      <None Include="Assets\TextMesh Pro\Sprites\EmojiOne Attribution.txt" />
      <None Include="Assets\TextMesh Pro\Shaders\TMP_Bitmap-Custom-Atlas.shader" />
      <None Include="Assets\TextMesh Pro\Shaders\TMP_SDF.shader" />
@@ -111,7 +103,6 @@
      <None Include="Assets\TextMesh Pro\Shaders\TMP_SDF-Mobile Masking.shader" />
      <None Include="Assets\ML-Agents\Timers\MainScene_timers.json" />
      <None Include="Assets\ML-Agents\Examples\SharedAssets\Materials\ShaderOutline.shader" />
-     <Folder Include="Assets\WebGLSupport\WebGLInput\Detail" />
      <None Include="Assets\TextMesh Pro\Shaders\TMP_SDF Overlay.shader" />
      <Folder Include="Assets\Images" />
      <Folder Include="Assets\ML-Agents\Examples\SharedAssets\Meshes" />
@@ -126,10 +117,7 @@
      <Folder Include="Assets\Scripts\Utils\Singleton" />
      <Folder Include="Assets\prefabs\Resources" />
      <None Include="Assets\TextMesh Pro\Sprites\EmojiOne.json" />
-     <Folder Include="Assets\WebGLSupport\WebGLInput\Mobile" />
      <None Include="Assets\TextMesh Pro\Shaders\TMP_Sprite.shader" />
-     <Folder Include="Assets\WebGLSupport\WebGLInput\Wrapper" />
-     <Folder Include="Assets\WebGLSupport\WebGLWindow" />
      <Reference Include="UnityEngine">
      <HintPath>C:\Program Files\2021.3.20f1\Editor\Data\Managed\UnityEngine\UnityEngine.dll</HintPath>
      </Reference>
