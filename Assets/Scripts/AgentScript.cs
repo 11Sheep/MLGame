@@ -92,6 +92,8 @@ public class AgentScript : Agent
 
     private bool _agentIsShown = false;
     
+    private Coroutine _eyesBlinkCO;
+    
     public void Initialize(float moveSpeed, int numberOfCandies, float idleTimePenalty, float timeoutPenalty, float offStagePenalty, RewardCandyScript[] rewardCandies, Action OnStartOfEpisode, Action OnAgentHitWall, Func<int, bool> OnAgentCollectedReward, Action OnPlayerFirstMove)
     {
         _moveSpeed = moveSpeed;
@@ -112,8 +114,13 @@ public class AgentScript : Agent
             _pengingEpisodeStart = false;
             _OnStartOfEpisode?.Invoke();
         }
-        
-        StartCoroutine(BlinkingEyes());
+
+        if (_eyesBlinkCO != null)
+        {
+            StopCoroutine(_eyesBlinkCO);
+        }
+
+        _eyesBlinkCO = StartCoroutine(BlinkingEyes());
     }
 
     private IEnumerator BlinkingEyes()

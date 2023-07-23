@@ -136,6 +136,9 @@ public class GameManagerScript : MonoBehaviour
     
     private void Awake()
     {
+        // Enter fullscreen
+        Screen.fullScreen = true;
+        
         // Set up the audio
         AudioManager.Instance.Initialize();
         
@@ -641,22 +644,26 @@ public class GameManagerScript : MonoBehaviour
     private float GetRoundTime(int roundIndex)
     {
         float roundTime = 0;
-        
-        if (roundIndex < 5)
+
+        if (roundIndex < 3)
         {
             roundTime = 6;
-        }
-        else if (roundIndex < 10)
+        }   
+        else if (roundIndex < 5)
         {
             roundTime = 5;
         }
-        if (roundIndex < 15)
+        else if (roundIndex < 10)
         {
             roundTime = 4;
         }
-        else
+        else if (roundIndex < 15)
         {
             roundTime = 3;
+        }
+        else
+        {
+            roundTime = 2;
         }
         
         return roundTime;
@@ -667,6 +674,10 @@ public class GameManagerScript : MonoBehaviour
     public void OnUISkipTutorial()
     {
         _timerCounter = 0;
+
+        _keyboardHintImage.DOFade(0, 0.3f);
+        _skipTutorialButton.gameObject.SetActive(false);
+        _HumanPlayerBoard.ExitTutorialMode();
 
         SetState(GameStates.CompetitionPopup);
     }
@@ -683,7 +694,6 @@ public class GameManagerScript : MonoBehaviour
                 
                 SetState(GameStates.CompetitionMode);
             });
-            
         }
     }
 

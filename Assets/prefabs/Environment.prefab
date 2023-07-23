@@ -575,7 +575,7 @@ MonoBehaviour:
   _isAgentLocationRandom: 1
   floorMeshRenderer: {fileID: 4846370926650093647}
   _agentScript: {fileID: 8009311518947948237}
-  _moveSpeed: 2
+  _moveSpeed: 3
   _idleTimePenalty: 0
   _maxEpisodeTime: 70
   _timeoutPenalty: -2

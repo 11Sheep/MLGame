@@ -340,6 +340,11 @@ public class EnvironmentScript : MonoBehaviour
         }
     }
 
+    public void ExitTutorialMode()
+    {
+        _numOfCandies = 4;
+    }
+
     public void SetCallbacks(Action<int, bool> onRewardCollected)
     {
         _OnRewardCollected = onRewardCollected;
