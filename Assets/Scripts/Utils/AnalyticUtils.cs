@@ -24,8 +24,14 @@ namespace Utils
             }
         }
 
+        public void SendCompetitionStartedEvent()
+        {
+            Mixpanel.Track("competitionStarted");
+        }
+
         public void SendMatchFinishedEvent(string winner, string winReason, int currentRound, int humansWins, int computerWins, int humanPoints, int computerPoints)
         {
+#if !UNITY_EDITOR
             var props = new Value();
             props["winner"] = winner;
             props["winReason"] = winReason;
@@ -37,14 +43,17 @@ namespace Utils
             props["computerPoints"] = computerPoints;
 
             Mixpanel.Track("matchResult", props);
+#endif
         }
         
         public void SendCompetitionFinishedEvent(string winner)
         {
+#if !UNITY_EDITOR        
             var props = new Value();
             props["winner"] = winner;
 
             Mixpanel.Track("competitionResult", props);
+#endif            
         }
 
         private void OnApplicationQuit()

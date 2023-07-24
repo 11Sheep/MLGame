@@ -25,6 +25,8 @@ public class CircleProgressElement : MonoBehaviour
 
    public void Reset()
    {
+      numOfWins = 0;
+      
       for (int circleIndex = 0; circleIndex < _circleElements.Length; circleIndex++)
       {
          _circleElements[circleIndex].Reset();

@@ -706,6 +706,8 @@ public class GameManagerScript : MonoBehaviour
                 
                 SetState(GameStates.CompetitionMode);
             });
+
+            AnalyticUtils.Instance.SendCompetitionStartedEvent();
         }
     }
 
